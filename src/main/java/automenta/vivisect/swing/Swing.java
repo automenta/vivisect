@@ -20,8 +20,8 @@ public class Swing {
 
     
     public final static float hashFloat(final int h) {
-        //return ((float)h) / (((float)Integer.MAX_VALUE) - ((float)Integer.MIN_VALUE));
-        return ((float)(h%256)) / (256.0f);
+        return ((float)h) / (((float)Integer.MAX_VALUE) - ((float)Integer.MIN_VALUE));
+        //return ((float)(h%256)) / (256.0f);
     }
 
     public final static Color getColor(final String s, final float saturation, final float brightness) {             return getColor(s.hashCode(), saturation, brightness);
@@ -29,6 +29,9 @@ public class Swing {
     public final static Color getColor(int hashCode, float saturation, float brightness) {
         float hue = hashFloat(hashCode);
         return Color.getHSBColor(hue, saturation, brightness);        
+    }
+    public final static Color getColor(int hashCode, float saturation, float brightness, float alpha) {
+        return getColor(getColor(hashCode, saturation, brightness), alpha);
     }
     public final static Color getColor(final Color c, float alpha) {
         return new Color(c.getRed(), c.getGreen(), c.getBlue(), (int)(255.0 * alpha));
@@ -70,7 +73,7 @@ public class Swing {
     public static Font FontAwesome;
     static {        
         try {
-            FontAwesome = Font.createFont(Font.TRUETYPE_FONT, Swing.class.getResourceAsStream("FontAwesome.ttf")).deriveFont(Font.PLAIN, 14);
+            FontAwesome = Font.createFont(Font.TRUETYPE_FONT, Swing.class.getClassLoader().getResourceAsStream("FontAwesome.ttf")).deriveFont(Font.PLAIN, 14);
         } catch (Exception ex) {         
             ex.printStackTrace();
         }

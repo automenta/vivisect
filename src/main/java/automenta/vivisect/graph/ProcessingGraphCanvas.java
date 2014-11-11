@@ -63,6 +63,7 @@ abstract public class ProcessingGraphCanvas<V, E> extends PApplet {
     float motionBlur = 0.0f;
     
     private GraphDisplay<V,E> display;
+    private boolean vertexUpdateAlways;
 
     public ProcessingGraphCanvas(GraphDisplay display) {
         super();
@@ -121,7 +122,7 @@ abstract public class ProcessingGraphCanvas<V, E> extends PApplet {
         public boolean draw(PApplet p, boolean text, float nodeSpeed, float scale) {
             boolean needsUpdate = update(nodeSpeed);
 
-            System.out.println(radius + " " + color + " " + label + " " + x + " " + y);
+            //System.out.println(radius + " " + color + " " + label + " " + x + " " + y);
             
             /*if (stroke > 0) {
              stroke(Color.WHITE.getRGB());
@@ -145,7 +146,7 @@ abstract public class ProcessingGraphCanvas<V, E> extends PApplet {
             
             if (text && (label != null)) {
                 p.fill(textColor); //, alpha * 255 * 0.75f);
-                p.textSize(r / 2);
+                p.textSize(r / 2f);
                 p.text(label, x*scale, y*scale);
             }
 
@@ -213,19 +214,17 @@ abstract public class ProcessingGraphCanvas<V, E> extends PApplet {
         drawn = false;
     }
 
-    public VertexDisplay updateVertex(final V o) {
+    public VertexDisplay updateVertex(final V o) {        
+        
         deadVertices.remove(o);
         
-        VertexDisplay v = vertices.get(o);
-        boolean changed = false;
+        VertexDisplay v = vertices.get(o);      
         if (v != null) {
             v.update(o);
             return v;
         }
+        
         v = new VertexDisplay(this, o);
-
-        
-        
         vertices.put(o, v);
 
         return v;
@@ -270,8 +269,9 @@ abstract public class ProcessingGraphCanvas<V, E> extends PApplet {
      * called from NAR update thread, not swing thread
      */
     public void updateGraph() {
-
-        if (hasUpdate() || (updateNext)) {
+        
+            
+        if (hasUpdate() || (updateNext) || display.updateNext()) {
 
             updateNext = false;
 
@@ -286,19 +286,24 @@ abstract public class ProcessingGraphCanvas<V, E> extends PApplet {
                     e.printStackTrace();
                 }
 
-                for (V v : currentGraph.vertexSet()) {
-                   ProcessingGraphCanvas.VertexDisplay d = updateVertex(v);            
-                }
+                if (currentGraph == null)
+                    return;
+                
+                for (final V v : currentGraph.vertexSet())
+                   updateVertex(v);            
+                
 
                 for (final V v : deadVertices)
                     vertices.remove(v);
             }
 
+            
             updateVertices();
             drawn = false;
         }
     }
-
+    
+    
     /** called after the graph has updated the current set of vertices; override to layout */
     protected void updateVertices() {
         
@@ -310,6 +315,8 @@ abstract public class ProcessingGraphCanvas<V, E> extends PApplet {
         if (drawn) {
             return;
         }
+
+        drawn = false;
 
         if (motionBlur > 0) {
             fill(0, 0, 0, 255f * (1.0f - motionBlur));
@@ -419,7 +426,7 @@ abstract public class ProcessingGraphCanvas<V, E> extends PApplet {
                     changed |= d.draw(this, text, nodeSpeed, scale);
                 }
             }
-            //drawn = !changed;
+            drawn = !changed;
 
         }
     }

@@ -13,6 +13,8 @@ import automenta.vivisect.graph.ProcessingGraphCanvas.VertexDisplay;
  */
 public interface GraphDisplay<V,E> {
 
+    public boolean updateNext();
+
     public static enum Shape { Rectangle, Ellipse };
 
     

@@ -299,17 +299,12 @@ public class FastOrganicLayout<V, E> {
         else
             vertexArray.clear();
         
-        graph.vertexSet().stream().map(v -> {
-            
+        for (V v : graph.vertexSet()) {
             VertexDisplay vd = canvas.getVertexDisplay(v);
-            if (vd.getRadius() > 0)
-                return vd;
-            return null;
-            
-        }).forEach( v -> {
-            if (v!=null) 
-                vertexArray.add(v);
-        });
+            if (vd == null) continue;
+            if (vd.getRadius() == 0) continue;
+            vertexArray.add(vd);
+        }
         
         mxRectangle initialBounds = null; //new mxRectangle(-100, -50, 100, 50);
                 //? graph.getBoundsForCells(vertexArray, false, false, true) : null;

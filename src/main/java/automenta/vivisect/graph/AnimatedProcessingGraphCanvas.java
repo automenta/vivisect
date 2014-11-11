@@ -13,28 +13,26 @@ import org.jgrapht.graph.DirectedMultigraph;
 public class AnimatedProcessingGraphCanvas<V,E> extends ProcessingGraphCanvas<V,E> {
     DirectedMultigraph<V, E> graph;    
     private final FastOrganicLayout layout;
+    private boolean vertexUpdateAlways;
 
     public AnimatedProcessingGraphCanvas(DirectedMultigraph<V,E> graph, GraphDisplay<V,E> display) {
         super(display);
-        this.graph = graph;        
+        
+        this.graph = graph;
+        this.layout = new FastOrganicLayout();
+        
+        updateGraph();
         setUpdateNext();
-        layout = new FastOrganicLayout();
     }
 
     
     @Override
     public Graph<V,E> getGraph() {
-        if (graph!=null)
-            return (Graph<V, E>) graph.clone();            
-        
-        //otherwise, should override in subclasses
-        return null;
+        return this.graph;
     }
 
     @Override
-    protected void updateVertices() {
-        if (currentGraph == null)
-            return;
+    protected void updateVertices() {        
         
         scale = 10f;
         layout.setInitialTemp(10f);
@@ -50,19 +48,21 @@ public class AnimatedProcessingGraphCanvas<V,E> extends ProcessingGraphCanvas<V,
 
     @Override
     public void draw() {
+        updateGraph();
+
         drawn = false;
         
         super.draw(); //To change body of generated methods, choose Tools | Templates.
     }
-    
-    
 
+
+    
     @Override
     protected boolean hasUpdate() {
-        //temporary:
-        setUpdateNext();
         
-        return true;
+        return false;
     }
+
+    
     
 }
