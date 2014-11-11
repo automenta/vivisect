@@ -13,16 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package automenta.vivisect.dock;
-
-import java.util.EventListener;
-import java.util.EventObject;
+package automenta.vivisect.swing.dock;
 
 /**
  *
  * @author kitfox
  */
-public interface DockingRegionContainerListener extends EventListener {
+public class DockingPickRecord {
 
-    public void dockingContainerEmpty(EventObject evt);
+    private final DockingChild child;
+    private final int direction;
+
+    public DockingPickRecord(final DockingChild child, final int direction) {
+        this.child = child;
+        this.direction = direction;
+    }
+
+    /**
+     * @return the child
+     */
+    public DockingChild getChild() {
+        return child;
+    }
+
+    /**
+     * @return the direction
+     */
+    public int getDirection() {
+        return direction;
+    }
+
 }

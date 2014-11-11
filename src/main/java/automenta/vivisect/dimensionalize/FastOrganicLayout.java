@@ -1,7 +1,7 @@
 package automenta.vivisect.dimensionalize;
 
-import automenta.vivisect.graph.ProcessingGraphCanvas;
-import automenta.vivisect.graph.ProcessingGraphCanvas.VertexDisplay;
+import automenta.vivisect.graph.AbstractGraphVis;
+import automenta.vivisect.graph.VertexVis;
 import com.mxgraph.util.mxRectangle;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.jgrapht.Graph;
-import org.jgrapht.graph.DirectedMultigraph;
 
 /**
  * Fast organic layout algorithm, adapted from JGraph
@@ -85,7 +84,7 @@ public class FastOrganicLayout<V, E> {
     /**
      * An array of all vertices to be laid out.
      */
-    protected List<VertexDisplay> vertexArray;
+    protected List<VertexVis> vertexArray;
 
     /**
      * An array of locally stored X co-ordinate displacements for the vertices.
@@ -131,7 +130,7 @@ public class FastOrganicLayout<V, E> {
     /**
      * Maps from vertices to indices.
      */
-    protected Map<VertexDisplay, Integer> indices;
+    protected Map<V, Integer> indices;
     
     
 
@@ -285,7 +284,7 @@ public class FastOrganicLayout<V, E> {
     /* (non-Javadoc)
      * @see com.mxgraph.layout.mxIGraphLayout#execute(java.lang.Object)
      */
-    public synchronized void execute(ProcessingGraphCanvas<V,E> canvas) {
+    public synchronized void execute(AbstractGraphVis<V,E> canvas) {
         Graph<V,E> graph = canvas.getGraph();
 
         if (indices == null)
@@ -300,7 +299,7 @@ public class FastOrganicLayout<V, E> {
             vertexArray.clear();
         
         for (V v : graph.vertexSet()) {
-            VertexDisplay vd = canvas.getVertexDisplay(v);
+            VertexVis vd = canvas.getVertexDisplay(v);
             if (vd == null) continue;
             if (vd.getRadius() == 0) continue;
             vertexArray.add(vd);
@@ -336,14 +335,14 @@ public class FastOrganicLayout<V, E> {
         // the indices into vertexArray
         
         for (int i = 0; i < n; i++) {
-            VertexDisplay<V,E> vd = vertexArray.get(i);
+            VertexVis<V,E> vd = vertexArray.get(i);
             
             //TODO is this necessary?
             /*if (!graph.containsVertex(vd.getVertex()))
                 continue;*/
             
             /*if (vd == null) {
-                vd = new VertexDisplay(vertex);
+                vd = new VertexVis(vertex);
                 displayed.put(vertex, vd);
             }*/
             
@@ -351,7 +350,7 @@ public class FastOrganicLayout<V, E> {
                 cellLocation[i] = new double[2];
 
             // Set up the mapping from array indices to cells
-            indices.put(vd, i);
+            indices.put(vd.vertex, i);
             //mxRectangle bounds = getVertexBounds(vertex);
 
 			// Set the X,Y value of the internal version of the cell to
@@ -390,7 +389,7 @@ public class FastOrganicLayout<V, E> {
             // obtained in indices into vertexArray and store as an array
             // against the original cell index
             //V v = vertexArray.get(i).getVertex();
-            //ProcessingGraphCanvas.VertexDisplay vd = displayed.get(v);
+            //ProcessingGraphCanvas.VertexVis vd = displayed.get(v);
 
             
             //TODO why does a vertex disappear from the graph... make this unnecessary
@@ -464,7 +463,7 @@ public class FastOrganicLayout<V, E> {
         double minx = 0, miny = 0, maxx = 0, maxy = 0;
 
         for (int i = 0; i < vertexArray.size(); i++) {
-            VertexDisplay vd = vertexArray.get(i);                
+            VertexVis vd = vertexArray.get(i);                
 
             if (vd != null) {
                 //cellLocation[i][0] -= 1/2.0; //geo.getWidth() / 2.0;
@@ -500,7 +499,7 @@ public class FastOrganicLayout<V, E> {
         }
         
         for (int i = 0; i < vertexArray.size(); i++) { 
-            VertexDisplay vd = vertexArray.get(i);          
+            VertexVis vd = vertexArray.get(i);          
             vd.movePosition((float)dx, (float)dy);
         }
             

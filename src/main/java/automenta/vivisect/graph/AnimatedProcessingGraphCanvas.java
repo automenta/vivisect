@@ -2,6 +2,7 @@ package automenta.vivisect.graph;
 
 import automenta.vivisect.dimensionalize.FastOrganicLayout;
 import org.jgrapht.Graph;
+import processing.core.PGraphics;
 
 /**
  *
@@ -9,7 +10,7 @@ import org.jgrapht.Graph;
  */
 
 
-public class AnimatedProcessingGraphCanvas<V,E> extends ProcessingGraphCanvas<V,E> {
+public class AnimatedProcessingGraphCanvas<V,E> extends AbstractGraphVis<V,E> {
     Graph<V, E> graph;    
     private final FastOrganicLayout layout;
     private boolean vertexUpdateAlways;
@@ -31,14 +32,13 @@ public class AnimatedProcessingGraphCanvas<V,E> extends ProcessingGraphCanvas<V,
     }
 
     @Override
-    protected void updateVertices() {        
+    protected void updateVertices() {     
         
-        scale = 10f;
-        layout.setInitialTemp(10f);
+        layout.setInitialTemp(3f);
         layout.setMinDistanceLimit(75f);
         layout.setMaxDistanceLimit(200f);
         
-        layout.setMaxIterations(5);
+        layout.setMaxIterations(1);
         
         
         layout.execute(this);
@@ -46,12 +46,10 @@ public class AnimatedProcessingGraphCanvas<V,E> extends ProcessingGraphCanvas<V,
     }
 
     @Override
-    public void draw() {
+    public boolean draw(PGraphics g) {
         updateGraph();
-
-        drawn = false;
         
-        super.draw(); //To change body of generated methods, choose Tools | Templates.
+        return super.draw(g);
     }
 
 

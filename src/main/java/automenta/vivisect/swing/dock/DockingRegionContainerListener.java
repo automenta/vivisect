@@ -13,26 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package automenta.vivisect.dock;
+package automenta.vivisect.swing.dock;
+
+import java.util.EventListener;
+import java.util.EventObject;
 
 /**
  *
  * @author kitfox
  */
-abstract public class DockingPathRecord {
+public interface DockingRegionContainerListener extends EventListener {
 
-    final DockingPathRecord next;
-
-    public DockingPathRecord() {
-        this.next = null;
-    }
-
-    public DockingPathRecord(final DockingPathRecord next) {
-        this.next = next;
-    }
-
-//    abstract public DockingChild getDockingChild();
-    public DockingPathRecord getLast() {
-        return (next == null) ? this : next.getLast();
-    }
+    public void dockingContainerEmpty(EventObject evt);
 }

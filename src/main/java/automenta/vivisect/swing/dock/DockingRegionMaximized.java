@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package automenta.vivisect.dock;
+package automenta.vivisect.swing.dock;
 
 import java.awt.Component;
 import javax.swing.JTabbedPane;
-import automenta.vivisect.dock.DockingRegionContainer.MinMaxRecord;
+import automenta.vivisect.swing.dock.DockingRegionContainer.MinMaxRecord;
 
 /**
  *

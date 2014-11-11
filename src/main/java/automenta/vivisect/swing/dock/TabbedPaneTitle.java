@@ -19,7 +19,7 @@
  *
  * Created on Jan 12, 2011, 8:06:49 AM
  */
-package automenta.vivisect.dock;
+package automenta.vivisect.swing.dock;
 
 import java.awt.event.MouseEvent;
 import javax.swing.JComponent;

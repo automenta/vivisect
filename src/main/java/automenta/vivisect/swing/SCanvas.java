@@ -10,10 +10,9 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 
 /**
- *
- * @author me
+ * Renders to Swing BufferedImage
  */
-public class NCanvas extends Canvas {
+public class SCanvas extends Canvas {
 
     protected RenderingHints renderHints;
     protected BufferedImage image = null;

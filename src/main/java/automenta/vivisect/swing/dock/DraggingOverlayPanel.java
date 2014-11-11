@@ -19,7 +19,7 @@
  *
  * Created on Jan 13, 2011, 6:02:58 AM
  */
-package automenta.vivisect.dock;
+package automenta.vivisect.swing.dock;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -30,7 +30,7 @@ import java.awt.Rectangle;
 import javax.swing.SwingUtilities;
 import static javax.swing.SwingUtilities.convertPoint;
 import static javax.swing.SwingUtilities.convertRectangle;
-import automenta.vivisect.dock.DockingRegionTabbed.PathRecordTabbed;
+import automenta.vivisect.swing.dock.DockingRegionTabbed.PathRecordTabbed;
 
 /**
  *

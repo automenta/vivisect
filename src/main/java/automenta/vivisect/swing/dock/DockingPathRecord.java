@@ -13,34 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package automenta.vivisect.dock;
+package automenta.vivisect.swing.dock;
 
 /**
  *
  * @author kitfox
  */
-public class RestoreRecord {
+abstract public class DockingPathRecord {
 
-    private final DockingPathRecord path;
-    private final int containerIndex;
+    final DockingPathRecord next;
 
-    public RestoreRecord(DockingPathRecord path, int containerIndex) {
-        this.path = path;
-        this.containerIndex = containerIndex;
+    public DockingPathRecord() {
+        this.next = null;
     }
 
-    /**
-     * @return the path
-     */
-    public DockingPathRecord getPath() {
-        return path;
+    public DockingPathRecord(final DockingPathRecord next) {
+        this.next = next;
     }
 
-    /**
-     * @return the containerIndex
-     */
-    public int getContainerIndex() {
-        return containerIndex;
+//    abstract public DockingChild getDockingChild();
+    public DockingPathRecord getLast() {
+        return (next == null) ? this : next.getLast();
     }
-
 }
