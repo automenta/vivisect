@@ -36,6 +36,19 @@ public class PCanvas extends PApplet {
     float motionBlur = 0.0f;
     private final Vis vis;
 
+    float camspeed = 20.0f;
+    float scrollcammult = 0.92f;
+    boolean keyToo = true;
+        float savepx = 0;
+        float savepy = 0;
+        int selID = 0;
+        
+        float difx = 0;
+        float dify = 0;
+        int lastscr = 0;
+        boolean EnableZooming = true;
+        float scrollcamspeed = 1.1f;
+
     
     public PCanvas(Vis vis) {
         super();
@@ -43,7 +56,25 @@ public class PCanvas extends PApplet {
         this.vis = vis;
 
     }
+
+    
+        float MouseToWorldCoordX(int x) {
+            return 1 / zoom * (x - difx - width / 2);
+        }
+
+        float MouseToWorldCoordY(int y) {
+            return 1 / zoom * (y - dify - height / 2);
+        }
+    
+    public float getCursorX() {
+        return MouseToWorldCoordX(mouseX);
+    }
+    
+    public float getCursorY() {
+        return MouseToWorldCoordY(mouseY);
+    }
  
+    
     @Override
     protected void resizeRenderer(int newWidth, int newHeight) {
         super.resizeRenderer(newWidth, newHeight);
@@ -52,7 +83,7 @@ public class PCanvas extends PApplet {
     
 
     public void mouseScrolled() {
-        hnav.mouseScrolled();
+        hnav.mouseScrolled();        
     }
 
     @Override
@@ -68,18 +99,21 @@ public class PCanvas extends PApplet {
     public void mouseReleased() {
         hnav.mouseReleased();
         hsim.mouseReleased();
+        super.mouseReleased();
     }
 
     @Override
     public void mouseDragged() {
         hnav.mouseDragged();
         hsim.mouseDragged();
+        super.mouseDragged();
     }
 
     @Override
     public void mousePressed() {
         hnav.mousePressed();
         hsim.mousePressed();
+        super.mousePressed();
     }
 
     @Override
@@ -135,6 +169,15 @@ public class PCanvas extends PApplet {
     public float getFrameRate() {
         return frameRate;
     }
+
+    public void setZoom(float f) {
+        zoom = f;
+    }
+
+    public float getZoom() {
+        return zoom;
+    }
+    
     
     
     
@@ -142,23 +185,7 @@ public class PCanvas extends PApplet {
 
     class Hnav {
 
-        private float savepx = 0;
-        private float savepy = 0;
-        private int selID = 0;
-        
-        private float difx = 0;
-        private float dify = 0;
-        private int lastscr = 0;
-        private boolean EnableZooming = true;
-        private float scrollcamspeed = 1.1f;
 
-        float MouseToWorldCoordX(int x) {
-            return 1 / zoom * (x - difx - width / 2);
-        }
-
-        float MouseToWorldCoordY(int y) {
-            return 1 / zoom * (y - dify - height / 2);
-        }
         private boolean md = false;
 
         void mousePressed() {
@@ -183,9 +210,6 @@ public class PCanvas extends PApplet {
             }
             drawn = false;
         }
-        private float camspeed = 20.0f;
-        private float scrollcammult = 0.92f;
-        boolean keyToo = true;
 
         void keyPressed() {
             if ((keyToo && key == 'w') || keyCode == UP) {

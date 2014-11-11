@@ -32,7 +32,7 @@ abstract public class AbstractGraphVis<V, E> implements Vis {
 
     boolean updateNext = true;
     
-    //bounds of last positioned vertices
+    //bounds of last positioned vertex
     float minX = 0f, minY = 0f, maxX = 0f, maxY = 0f;
     
     private GraphDisplay<V,E> display;
@@ -82,7 +82,7 @@ abstract public class AbstractGraphVis<V, E> implements Vis {
         
         VertexVis v = vertices.get(o);      
         if (v != null) {
-            display.update(this, v);
+            display.vertex(this, v);
             return v;
         }
         
@@ -98,7 +98,7 @@ abstract public class AbstractGraphVis<V, E> implements Vis {
         
         EdgeVis v = edges.get(o);      
         if (v != null) {
-            display.update(this, v);
+            display.edge(this, v);
             return v;
         }
         
@@ -119,7 +119,7 @@ abstract public class AbstractGraphVis<V, E> implements Vis {
     public void updateGraph() {
         
             
-        if (hasUpdate() || (updateNext) || display.updateNext()) {
+        if (hasUpdate() || (updateNext) || display.preUpdate(this)) {
 
             updateNext = false;
 
@@ -196,19 +196,11 @@ abstract public class AbstractGraphVis<V, E> implements Vis {
             System.out.println(time + "ns for " + currentGraph.vertexSet().size() + "|" + currentGraph.edgeSet().size());
         */
      
-        updateVertices();
+        display.postUpdate(this);
 
         return true;
     }
     
-    protected void updateVertices() {        
-
-    }
-
-    
-
-    
-
     
     public void resurrectVertex(V v) {
         deadVertices.remove(v);        

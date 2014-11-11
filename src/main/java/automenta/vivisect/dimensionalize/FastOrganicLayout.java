@@ -1,6 +1,8 @@
 package automenta.vivisect.dimensionalize;
 
 import automenta.vivisect.graph.AbstractGraphVis;
+import automenta.vivisect.graph.EdgeVis;
+import automenta.vivisect.graph.GraphDisplay;
 import automenta.vivisect.graph.VertexVis;
 import com.mxgraph.util.mxRectangle;
 import java.util.ArrayList;
@@ -13,7 +15,7 @@ import org.jgrapht.Graph;
 /**
  * Fast organic layout algorithm, adapted from JGraph
  */
-public class FastOrganicLayout<V, E> {
+public class FastOrganicLayout<V, E> implements GraphDisplay<V,E> {
 
     /**
      * Specifies if the top left corner of the input cells should be the origin
@@ -22,14 +24,14 @@ public class FastOrganicLayout<V, E> {
     protected boolean useInputOrigin = true;
 
     /**
-     * Specifies if all edge points of traversed edges should be removed.
+     * Specifies if all edge points of traversed edge should be removed.
      * Default is true.
      */
     protected boolean resetEdges = true;
 
     /**
-     * Specifies if the STYLE_NOEDGESTYLE flag should be set on edges that are
-     * modified by the result. Default is true.
+     * Specifies if the STYLE_NOEDGESTYLE flag should be set on edge that are
+ modified by the result. Default is true.
      */
     protected boolean disableEdgeStyle = true;
 
@@ -56,8 +58,8 @@ public class FastOrganicLayout<V, E> {
     protected double minDistanceLimitSquared = 0;
 
     /**
-     * The maximum distance between vertices, beyond which their repulsion no
-     * longer has an effect
+     * The maximum distance between vertex, beyond which their repulsion no
+ longer has an effect
      */
     protected double maxDistanceLimit = 500;
 
@@ -82,22 +84,22 @@ public class FastOrganicLayout<V, E> {
     protected double iteration = 0;
 
     /**
-     * An array of all vertices to be laid out.
+     * An array of all vertex to be laid out.
      */
     protected List<VertexVis> vertexArray;
 
     /**
-     * An array of locally stored X co-ordinate displacements for the vertices.
+     * An array of locally stored X co-ordinate displacements for the vertex.
      */
     protected double[] dispX;
 
     /**
-     * An array of locally stored Y co-ordinate displacements for the vertices.
+     * An array of locally stored Y co-ordinate displacements for the vertex.
      */
     protected double[] dispY;
 
     /**
-     * An array of locally stored co-ordinate positions for the vertices.
+     * An array of locally stored co-ordinate positions for the vertex.
      */
     protected double[][] cellLocation;
 
@@ -112,7 +114,7 @@ public class FastOrganicLayout<V, E> {
     protected double[] radiusSquared;
 
     /**
-     * Array of booleans representing the movable states of the vertices.
+     * Array of booleans representing the movable states of the vertex.
      */
     protected boolean[] isMoveable;
 
@@ -128,7 +130,7 @@ public class FastOrganicLayout<V, E> {
     protected boolean allowedToRun = true;
 
     /**
-     * Maps from vertices to indices.
+     * Maps from vertex to indices.
      */
     protected Map<V, Integer> indices;
     
@@ -292,7 +294,7 @@ public class FastOrganicLayout<V, E> {
         else
             indices.clear();
         
-        // Finds the relevant vertices for the layout
+        // Finds the relevant vertex for the layout
         if (vertexArray == null)
             vertexArray = new ArrayList();
         else
@@ -329,7 +331,7 @@ public class FastOrganicLayout<V, E> {
 
         forceConstantSquared = forceConstant * forceConstant;
 
-		// Create a map of vertices first. This is required for the array of
+		// Create a map of vertex first. This is required for the array of
         // arrays called neighbours which holds, for each vertex, a list of
         // ints which represents the neighbours cells to that vertex as
         // the indices into vertexArray
@@ -385,7 +387,7 @@ public class FastOrganicLayout<V, E> {
             dispX[i] = 0;
             dispY[i] = 0;
             isMoveable[i] = true; //isVertexMovable(vertexArray[i]);
-            // Get lists of neighbours to all vertices, translate the cells
+            // Get lists of neighbours to all vertex, translate the cells
             // obtained in indices into vertexArray and store as an array
             // against the original cell index
             //V v = vertexArray.get(i).getVertex();
@@ -401,11 +403,11 @@ public class FastOrganicLayout<V, E> {
                 List<V> cells = new ArrayList(edges.size());
                 for (E e : edges) {
                     if (isResetEdges()) {
-                        //graph.resetEdge(edges[k]);
+                        //graph.resetEdge(edge[k]);
                     }
 
                     if (isDisableEdgeStyle()) {
-                        //setEdgeStyleEnabled(edges[k], false);
+                        //setEdgeStyleEnabled(edge[k], false);
                     }
 
                     V source = graph.getEdgeSource(e);
@@ -448,10 +450,10 @@ public class FastOrganicLayout<V, E> {
                     return;
                 }
 
-                // Calculate repulsive forces on all vertices
+                // Calculate repulsive forces on all vertex
                 calcRepulsion();
 
-                // Calculate attractive forces through edges
+                // Calculate attractive forces through edge
                 calcAttraction();
 
                 calcPositions();
@@ -542,7 +544,7 @@ public class FastOrganicLayout<V, E> {
 
     /**
      * Calculates the attractive forces between all laid out nodes linked by
-     * edges
+ edge
      */
     protected void calcAttraction() {
 		// Check the neighbours of each vertex and calculate the attractive
@@ -622,7 +624,7 @@ public class FastOrganicLayout<V, E> {
                             - radius[j];
 
                     if (deltaLengthWithRadius > maxDistanceLimit) {
-                        // Ignore vertices too far apart
+                        // Ignore vertex too far apart
                         continue;
                     }
 
@@ -647,6 +649,25 @@ public class FastOrganicLayout<V, E> {
                 }
             }
         }
+    }
+
+    @Override
+    public boolean preUpdate(AbstractGraphVis<V,E> g) {
+        return true;
+    }
+
+    @Override
+    public void vertex(AbstractGraphVis<V, E> g, VertexVis<V, E> v) {
+    }
+
+    @Override
+    public void edge(AbstractGraphVis<V, E> g, EdgeVis<V, E> e) {
+    }
+
+    @Override
+    public boolean postUpdate(AbstractGraphVis<V,E> g) {
+        execute(g);
+        return true;
     }
 
 

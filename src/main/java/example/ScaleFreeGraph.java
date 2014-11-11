@@ -15,7 +15,7 @@ import org.jgrapht.graph.DirectedPseudograph;
  *
  * @author me
  */
-public class ViewScaleFreeGraph {
+public class ScaleFreeGraph {
  
         
     public static void main(String[] args) {
@@ -30,6 +30,6 @@ public class ViewScaleFreeGraph {
         };
         Graph g = new DirectedPseudograph(DefaultEdge.class);
         new ScaleFreeGraphGenerator<>(16).generateGraph(g, vertexFactory, null);
-        new ViewDirectedGraph(g);        
+        new SimpleDirectedGraph(g);        
     }
 }

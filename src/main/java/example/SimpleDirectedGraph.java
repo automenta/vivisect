@@ -6,7 +6,8 @@
 package example;
 
 import automenta.vivisect.Video;
-import automenta.vivisect.graph.AnimatedProcessingGraphCanvas;
+import automenta.vivisect.dimensionalize.FastOrganicLayout;
+import automenta.vivisect.graph.AnimatingGraphVis;
 import automenta.vivisect.graph.GraphDisplay;
 import automenta.vivisect.graph.AbstractGraphVis;
 import automenta.vivisect.graph.EdgeVis;
@@ -22,7 +23,7 @@ import org.jgrapht.graph.DirectedMultigraph;
  *
  * @author me
  */
-public class ViewDirectedGraph {
+public class SimpleDirectedGraph {
     
     
     public static class DefaultDisplay<V,E> implements GraphDisplay<V,E> {
@@ -37,13 +38,13 @@ public class ViewDirectedGraph {
         }
 
         @Override
-        public void update(AbstractGraphVis<V,E> g, EdgeVis<V,E> e) {
+        public void edge(AbstractGraphVis<V,E> g, EdgeVis<V,E> e) {
             e.thickness = 23f;
             e.color = gray;
         }
 
         @Override
-        public void update(final AbstractGraphVis<V,E> g, final VertexVis<V,E> v) {
+        public void vertex(final AbstractGraphVis<V,E> g, final VertexVis<V,E> v) {
             final Object o = v.vertex;
             
             v.shape = Shape.Ellipse;
@@ -62,20 +63,36 @@ public class ViewDirectedGraph {
         
 
         @Override
-        public boolean updateNext() {            
+        public boolean preUpdate(AbstractGraphVis<V,E> g) {            
             //enables continuous animation
+            return true;
+        }       
+        
+        @Override
+        public boolean postUpdate(AbstractGraphVis<V,E> g) {                        
             return true;
         }       
         
     }
 
-    public ViewDirectedGraph(Graph g) {
+    public SimpleDirectedGraph(Graph g) {
+        FastOrganicLayout layout;
         
         new NWindow("Directed Graph", 
                 new PCanvas( 
-                        new AnimatedProcessingGraphCanvas(g, new DefaultDisplay())
+                        new AnimatingGraphVis(g, 
+                                new DefaultDisplay(),
+                                layout = new FastOrganicLayout()
+                        )
                 )
         ).show(800,800,true);
+        
+        /*this.layout = new FastOrganicLayout();*/
+        layout.setInitialTemp(3f);
+        layout.setMinDistanceLimit(75f);
+        layout.setMaxDistanceLimit(200f);
+        
+        layout.setMaxIterations(1);
         
     }
 
@@ -86,7 +103,7 @@ public class ViewDirectedGraph {
         g.addVertex("B");
         g.addEdge("A","B",1);
         
-        new ViewDirectedGraph(g);        
+        new SimpleDirectedGraph(g);        
     }
     
 }

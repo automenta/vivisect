@@ -11,11 +11,13 @@ package automenta.vivisect.graph;
  */
 public interface GraphDisplay<V,E> {
 
-    public boolean updateNext();
+    public boolean preUpdate(AbstractGraphVis<V,E> g);
 
-    public void update(AbstractGraphVis<V,E> g, VertexVis<V,E> v);
-    public void update(AbstractGraphVis<V,E> g, EdgeVis<V,E> e);
+    public void vertex(AbstractGraphVis<V,E> g, VertexVis<V,E> v);
+    public void edge(AbstractGraphVis<V,E> g, EdgeVis<V,E> e);
 
+    public boolean postUpdate(AbstractGraphVis<V,E> g);
+    
     public static enum Shape { Rectangle, Ellipse };
 
 //    
