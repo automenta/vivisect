@@ -2,7 +2,6 @@ package automenta.vivisect.graph;
 
 import automenta.vivisect.dimensionalize.FastOrganicLayout;
 import org.jgrapht.Graph;
-import org.jgrapht.graph.DirectedMultigraph;
 
 /**
  *
@@ -11,11 +10,11 @@ import org.jgrapht.graph.DirectedMultigraph;
 
 
 public class AnimatedProcessingGraphCanvas<V,E> extends ProcessingGraphCanvas<V,E> {
-    DirectedMultigraph<V, E> graph;    
+    Graph<V, E> graph;    
     private final FastOrganicLayout layout;
     private boolean vertexUpdateAlways;
 
-    public AnimatedProcessingGraphCanvas(DirectedMultigraph<V,E> graph, GraphDisplay<V,E> display) {
+    public AnimatedProcessingGraphCanvas(Graph<V,E> graph, GraphDisplay<V,E> display) {
         super(display);
         
         this.graph = graph;

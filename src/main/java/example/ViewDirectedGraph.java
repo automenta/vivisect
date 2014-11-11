@@ -11,9 +11,9 @@ import automenta.vivisect.graph.ProcessingGraphCanvas;
 import automenta.vivisect.swing.NWindow;
 import automenta.vivisect.swing.Swing;
 import java.awt.Color;
+import org.jgrapht.Graph;
 
 import org.jgrapht.graph.DirectedMultigraph;
-import processing.core.PApplet;
 
 /**
  *
@@ -73,22 +73,23 @@ public class ViewDirectedGraph {
         
         
     }
+
+    public ViewDirectedGraph(Graph g) {
+        
+        new NWindow("Directed Graph", 
+                new AnimatedProcessingGraphCanvas(g, new DefaultDisplay())        
+        ).show(800,800,true);
+        
+    }
+
     
     public static void main(String[] args) {
-        
-        Class p = PApplet.class;
-        
         DirectedMultigraph g = new DirectedMultigraph(Integer.class);
         g.addVertex("A");
         g.addVertex("B");
         g.addEdge("A","B",1);
         
-        new NWindow("Directed Graph", 
-                new AnimatedProcessingGraphCanvas(g, new DefaultDisplay())        
-        )
-                
-                .show(800,800,true);
-        
+        new ViewDirectedGraph(g);        
     }
     
 }
