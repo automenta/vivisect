@@ -140,7 +140,13 @@ public class FastOrganicLayout<V, E> implements GraphDisplay<V,E> {
      * Constructs a new fast organic layout for the specified graph.
      */
     public FastOrganicLayout() {
-
+        
+        setInitialTemp(3f);
+        setMinDistanceLimit(1f);
+        setMaxDistanceLimit(200f);
+        
+        setForceConstant(100f);
+        setMaxIterations(1);
     }
 
     /**
@@ -472,8 +478,8 @@ public class FastOrganicLayout<V, E> implements GraphDisplay<V,E> {
                 //cellLocation[i][1] -= 1/2.0; //geo.getHeight() / 2.0;
 
                 float r = vd.getRadius();
-                double x = /*graph.snap*/(cellLocation[i][0] - r/2f);
-                double y = /*graph.snap*/(cellLocation[i][1] - r/2f);                    
+                double x = /*graph.snap*/(cellLocation[i][0] - r);
+                double y = /*graph.snap*/(cellLocation[i][1] - r);                    
                 vd.setPosition((float)x, (float)y);
 
                 if (i == 0) {

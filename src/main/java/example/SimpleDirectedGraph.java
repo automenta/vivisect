@@ -76,23 +76,15 @@ public class SimpleDirectedGraph {
     }
 
     public SimpleDirectedGraph(Graph g) {
-        FastOrganicLayout layout;
         
         new NWindow("Directed Graph", 
                 new PCanvas( 
                         new AnimatingGraphVis(g, 
                                 new DefaultDisplay(),
-                                layout = new FastOrganicLayout()
+                                new FastOrganicLayout()
                         )
                 )
         ).show(800,800,true);
-        
-        /*this.layout = new FastOrganicLayout();*/
-        layout.setInitialTemp(3f);
-        layout.setMinDistanceLimit(75f);
-        layout.setMaxDistanceLimit(200f);
-        
-        layout.setMaxIterations(1);
         
     }
 
