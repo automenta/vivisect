@@ -5,7 +5,7 @@
  */
 package example;
 
-import automenta.vivisect.TimeSeries;
+import automenta.vivisect.TreeMLData;
 import automenta.vivisect.swing.NWindow;
 import automenta.vivisect.timeline.BarChart;
 import automenta.vivisect.timeline.LineChart;
@@ -21,13 +21,13 @@ import java.util.UUID;
  */
 public class TimelineCharts {
     
-    public static class RandomTimeSeries extends TimeSeries {
+    public static class RandomTimeSeries extends TreeMLData {
 
         public RandomTimeSeries(int historySize, float range) {
             super(UUID.randomUUID().toString().substring(0,8), Color.getHSBColor((float)Math.random(), 0.85f, 0.85f), historySize);
             
             for (int i = 0; i < historySize; i++) {
-                push(i, (float)Math.random() * range);
+                setData(i, (float)Math.random() * range);
             }
         }
         
@@ -35,9 +35,9 @@ public class TimelineCharts {
     
     public static void main(String[] args) {
 
-        TimeSeries a = new RandomTimeSeries(1000, 0.5f);
-        TimeSeries b = new RandomTimeSeries(1000, 0.9f);
-        TimeSeries c = new RandomTimeSeries(1000, 0.6f);
+        TreeMLData a = new RandomTimeSeries(1000, 0.5f);
+        TreeMLData b = new RandomTimeSeries(1000, 0.9f);
+        TreeMLData c = new RandomTimeSeries(1000, 0.6f);
         
         
         new NWindow("_", new Timeline2DCanvas(
@@ -50,7 +50,7 @@ public class TimelineCharts {
 //            new LineChart(t.getCharts("task.novel.add", "task.immediate_processed")).height(3),
 //            new LineChart(t.getCharts("task.goal.process", "task.question.process", "task.judgment.process")).height(3),
 //            new LineChart(t.getCharts("emotion.busy")).height(1),
-//            new BarChart(new TimeSeries.FirstOrderDifferenceTimeSeries("d(concepts)", t.charts.get("concept.count"))),
+//            new BarChart(new TreeMLData.FirstOrderDifferenceTimeSeries("d(concepts)", t.charts.get("concept.count"))),
             
         )).show(800, 800, true);
         

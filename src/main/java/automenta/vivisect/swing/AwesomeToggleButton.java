@@ -1,5 +1,6 @@
 package automenta.vivisect.swing;
 
+import automenta.vivisect.Video;
 import java.awt.Graphics;
 import javax.swing.JToggleButton;
 
@@ -14,7 +15,7 @@ public class AwesomeToggleButton extends JToggleButton {
         super();
         this.codeUnselected = faCodeUnselected;
         this.codeSelected = faCodeSelected;
-        setFont(Swing.FontAwesome);
+        setFont(Video.FontAwesome);
         setText(String.valueOf(faCodeUnselected));
     }
 

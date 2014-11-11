@@ -4,7 +4,7 @@
  */
 package automenta.vivisect.timeline;
 
-import automenta.vivisect.TimeSeries;
+import automenta.vivisect.TreeMLData;
 
 
 
@@ -16,7 +16,7 @@ public class StackedPercentageChart extends LineChart {
     float barWidth = 0.9f;
     float barHeight = 0.9f;
 
-    public StackedPercentageChart(TimeSeries... series) {
+    public StackedPercentageChart(TreeMLData... series) {
         super(series);
     }
 
@@ -31,10 +31,10 @@ public class StackedPercentageChart extends LineChart {
     @Override
     protected void drawData(Timeline2DCanvas l, float timeScale, float yScale, float y) {
         l.noStroke();
-        for (long t = l.cycleStart; t < l.cycleEnd; t++) {
+        for (int t = l.cycleStart; t < l.cycleEnd; t++) {
             float total = 0;
-            for (TimeSeries chart : sensors) {
-                float v = chart.getValue(t);
+            for (TreeMLData chart : sensors) {
+                float v = (float)chart.getData(t);
                 if (Float.isNaN(v)) {
                     continue;
                 }
@@ -45,14 +45,14 @@ public class StackedPercentageChart extends LineChart {
             }
             float sy = y;
             float gap = yScale * (1.0f - barHeight) / sensors.size();
-            for (TimeSeries chart : sensors) {
+            for (TreeMLData chart : sensors) {
                 int ccolor = chart.getColor().getRGB();
                 float lx = 0;
                 float ly = 0;
                 l.strokeWeight(1f);
                 l.fill(255f);
                 float x = t * timeScale;
-                float v = chart.getValue(t);
+                float v = (float)chart.getData(t);
                 if (Float.isNaN(v)) {
                     continue;
                 }

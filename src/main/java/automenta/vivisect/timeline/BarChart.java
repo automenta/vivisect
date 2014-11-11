@@ -1,13 +1,13 @@
 package automenta.vivisect.timeline;
 
-import automenta.vivisect.TimeSeries;
+import automenta.vivisect.TreeMLData;
 
 
 public class BarChart extends LineChart {
 
     float barWidth = 0.9f;
 
-    public BarChart(TimeSeries t) {
+    public BarChart(TreeMLData t) {
         super(t);
     }
 
@@ -15,12 +15,12 @@ public class BarChart extends LineChart {
     @Override
     protected void drawData(Timeline2DCanvas l, float timeScale, float yScale1, float y) {
         int ccolor = 0;
-        TimeSeries chart = sensors.get(0);
+        TreeMLData chart = sensors.get(0);
         ccolor = chart.getColor().getRGB();
         l.noStroke();
-        for (long t = l.cycleStart; t < l.cycleEnd; t++) {
+        for (int t = l.cycleStart; t < l.cycleEnd; t++) {
             float x = t * timeScale;
-            float v = chart.getValue(t);
+            float v = (float)chart.getData(t);
             
             if (Float.isNaN(v)) {
                 continue;

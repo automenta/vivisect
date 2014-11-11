@@ -29,4 +29,6 @@ public interface GraphDisplay<V,E> {
     public int getEdgeColor(E e);
     public int getTextColor(V v);
 
+    public int getVertexStrokeColor(V v);
+    public float getVertexStroke(V v);
 }

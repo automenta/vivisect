@@ -1,6 +1,6 @@
 package automenta.vivisect.timeline;
 
-import automenta.vivisect.TimeSeries;
+import automenta.vivisect.TreeMLData;
 import boofcv.alg.transform.fft.GeneralPurposeFFT_F32_1D;
 import com.google.common.primitives.Floats;
 import java.util.ArrayList;
@@ -38,13 +38,13 @@ public class SpectrumChart extends LineChart {
     
     private int windowSize;
 
-    public SpectrumChart(TimeSeries t, int windowSize) {
+    public SpectrumChart(TreeMLData t, int windowSize) {
         super(t);
         this.windowSize = windowSize;
     }
 
     protected void update() {
-        TimeSeries chart = sensors.get(0);
+        TreeMLData chart = sensors.get(0);
         
         
         float length = chart.getEnd() - chart.getStart();;
@@ -59,7 +59,7 @@ public class SpectrumChart extends LineChart {
 
             float[] input = new float[vl*2];
             for (int i = 0; i < vl; i++)
-                input[i*2] = chart.getValue(t++);
+                input[i*2] = (float)chart.getData(t++);
 
             GeneralPurposeFFT_F32_1D x = new GeneralPurposeFFT_F32_1D(vl);
             x.complexForward(input);
@@ -84,7 +84,7 @@ public class SpectrumChart extends LineChart {
     @Override
     protected void drawData(Timeline2DCanvas l, float timeScale, float yScale, float y) {
     
-        TimeSeries chart = sensors.get(0);
+        TreeMLData chart = sensors.get(0);
         
         if (!updated) {            
             update(); 

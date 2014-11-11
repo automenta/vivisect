@@ -21,8 +21,9 @@
     </repositories>
         
     <dependencies>
+        
+        
         <dependency>
-
             <groupId>processing</groupId>
             <artifactId>core</artifactId>
             <version>3.0</version>
@@ -67,5 +68,13 @@
             <artifactId>gremlin-java</artifactId>
             <version>2.6.0</version>
         </dependency>
+        
+        <dependency>
+	<groupId>org.encog</groupId>
+	<artifactId>encog-core</artifactId>
+	<version>3.3.0</version>
+</dependency>
+
+
     </dependencies>
 </project>

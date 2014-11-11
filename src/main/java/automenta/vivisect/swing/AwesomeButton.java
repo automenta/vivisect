@@ -1,5 +1,6 @@
 package automenta.vivisect.swing;
 
+import automenta.vivisect.Video;
 import javax.swing.JButton;
 
 
@@ -11,7 +12,7 @@ public class AwesomeButton extends JButton {
 
     public AwesomeButton(char faCode) {
         super();
-        setFont(Swing.FontAwesome);
+        setFont(Video.FontAwesome);
         setText(String.valueOf(faCode));
     }
 }

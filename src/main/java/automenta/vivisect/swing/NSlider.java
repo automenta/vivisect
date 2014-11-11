@@ -17,6 +17,7 @@
 
 package automenta.vivisect.swing;
 
+import automenta.vivisect.Video;
 import com.google.common.util.concurrent.AtomicDouble;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -70,7 +71,7 @@ public class NSlider extends JLabel implements MouseListener, MouseMotionListene
         addMouseListener(this);
         addMouseMotionListener(this);
         
-        setFont(Swing.monofont.deriveFont(13f));
+        setFont(Video.monofont.deriveFont(13f));
         
     }
 

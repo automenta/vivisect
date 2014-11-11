@@ -1,14 +1,13 @@
 package automenta.vivisect.timeline;
 
-import automenta.vivisect.TimeSeries;
+import automenta.vivisect.TreeMLData;
 import java.util.Arrays;
 import java.util.List;
 
-
 public class LineChart extends Chart {
-    public final List<TimeSeries> sensors;
-    double min;
-    double max;
+    public final List<TreeMLData> sensors;
+    float min;
+    float max;
     boolean showVerticalLines = false;
     boolean showPoints = true;
     float lineThickness = 1.5f;
@@ -16,7 +15,7 @@ public class LineChart extends Chart {
 
   
 
-    public LineChart(TimeSeries... series) {
+    public LineChart(TreeMLData... series) {
         super();
         this.sensors = Arrays.asList(series);
     }
@@ -40,12 +39,12 @@ public class LineChart extends Chart {
     }
 
     protected void updateRange(Timeline2DCanvas l) {
-        min = Double.POSITIVE_INFINITY;
-        max = Double.NEGATIVE_INFINITY;
-        for (TimeSeries chart : sensors) {
-            float[] mm = chart.getMinMax(l.cycleStart, l.cycleEnd);
-            min = Math.min(min,mm[0]);
-            max = Math.max(max,mm[1]);
+        min = Float.POSITIVE_INFINITY;
+        max = Float.NEGATIVE_INFINITY;
+        for (TreeMLData chart : sensors) {
+            double[] mm = chart.getMinMax(l.cycleStart, l.cycleEnd);
+            min = (float)Math.min(min,mm[0]);
+            max = (float)Math.max(max,mm[1]);
         }
         
     }
@@ -58,7 +57,7 @@ public class LineChart extends Chart {
         int dsy = (int) Math.abs(screenyLo - screenyHi);
         float dsyt = screenyHi + 0.15f * dsy;
         float ytspace = dsy * 0.75f / sensors.size() / 2;
-        for (TimeSeries chart : sensors) {
+        for (TreeMLData chart : sensors) {
             l.fill(chart.getColor().getRGB());
             dsyt += ytspace;
             l.text(chart.label, 0, dsyt);
@@ -68,27 +67,27 @@ public class LineChart extends Chart {
         l.fill(200, 195f);
         
         //TODO number precision formatting
-        l.text("" + ((float) min), 0, screenyLo - dsy / 10f);
-        l.text("" + ((float) max), 0, screenyHi + dsy / 10f);
+        l.text("" + ((double) min), 0, screenyLo - dsy / 10f);
+        l.text("" + ((double) max), 0, screenyHi + dsy / 10f);
         l.popMatrix();
     }
 
     protected void drawData(Timeline2DCanvas l, float timeScale1, float yScale1, float y) {
         int ccolor = 0;
-        for (TimeSeries chart : sensors) {
+        for (TreeMLData chart : sensors) {
             ccolor = chart.getColor().getRGB();
             float lx = 0;
             float ly = 0;
             l.fill(255f);
             boolean firstPoint = false;
-            for (long t = l.cycleStart; t < l.cycleEnd; t++) {
+            for (int t = l.cycleStart; t < l.cycleEnd; t++) {
                 float x = t * timeScale1;
-                float v = chart.getValue(t);
+                float v = (float)chart.getData(t);
                 if (Float.isNaN(v)) {
                     continue;
                 }
                 
-                float p = (max == min) ? 0 : (float) ((v - min) / (max - min));
+                float p = (float)((max == min) ? 0 : (double) ((v - min) / (max - min)));
                 float px = x;
                 float h = p * yScale1;
                 float py = y + yScale1 - h;

@@ -1,38 +1,54 @@
 package automenta.vivisect;
 
-import automenta.vivisect.swing.Swing;
 import java.awt.Color;
 import java.util.TreeMap;
+import org.encog.ml.data.MLData;
+import org.encog.ml.data.basic.BasicMLDataCentroid;
+import org.encog.util.kmeans.Centroid;
 
 
 /**
  * Used by Chart, a chart data set is a container to store chart data.
  */
-public class TimeSeries {
+public class TreeMLData implements MLData {
 
-    public final TreeMap<Long,Float> values;
+    //TODO use a primitive collection
+    public final TreeMap<Integer,Double> values;
+    
     protected Color colour;
-	//protected float strokeWeight = 1;
+	//protected double strokeWeight = 1;
     //protected int[] colors = new int[0];
 
     boolean resetRangeEachCycle = true;
     public final String label;
-    protected final int historySize;
-    private float[] specificMinMax;
+    protected final int capacity;
+    private double[] specificMinMax;
     
     private boolean specificRange;
-    float defaultValue = Float.NaN;
+    double defaultValue = Double.NaN;
 
-    public TimeSeries(String theName, Color color, int historySize) {
+    /** initializes with no fixed capacity */
+    public TreeMLData(String theName, Color color) {
+        this(theName, color, -1);
+    }
+    
+    public TreeMLData(TreeMLData t) {
+        this.label = t.label;
+        this.colour = t.colour;
+        this.capacity = t.capacity;
+        this.values = t.values;
+    }
+    
+    public TreeMLData(String theName, Color color, int historySize) {
         label = theName;
         colour = color;
-        this.historySize = historySize;
+        capacity = historySize;
         values = new TreeMap();
     }
 
-    public TimeSeries setRange(float min, float max) {
+    public TreeMLData setRange(double min, double max) {
         this.specificRange = true;
-        this.specificMinMax = new float[] { min, max };
+        this.specificMinMax = new double[] { min, max };
         return this;
     }
 
@@ -40,46 +56,89 @@ public class TimeSeries {
         return colour;
     }
 
-    public long getStart() { return values.firstKey(); }
-    public long getEnd() { return values.lastKey(); }
- 
+    public int getStart() { return values.firstKey(); }
+    public int getEnd() { return values.lastKey(); }
 
-    public void push(final long t, final float f) {
+    @Override
+    public void clear() {
+        values.clear();
+    }
+
+    
+
+    @Override
+    public void add(final int t, final double f) {
+        throw new UnsupportedOperationException("Not supported yet");
+    }
+    
+    @Override
+    public void setData(final int t, final double f) {
         
-        
-        while (values.size() > historySize) {
-            values.remove(values.firstKey());            
+        if (capacity!=-1) {
+            while (values.size() > capacity) {
+                //TODO configurable removal policy
+                values.remove(values.firstKey());            
+            }
         }
         
         values.put(t, f);
-        
-
     }
 
-    public float getSpecificMin() {        
+    /** clears the values and sets the data as if it were an array, starting at index 0 */
+    @Override public void setData(double[] doubles) {
+        values.clear();
+        
+        int j = 0;
+        for (double d : doubles) {
+            setData(j++, d);
+        }
+    }
+    
+    
+
+    public double getSpecificMin() {        
         return specificMinMax[0];
     }
 
-    public float getSpecificMax() {        
+    public double getSpecificMax() {        
         return specificMinMax[1];
     }
 
-    public float getValue(long t) {
-        Float f = values.get(t);
+    @Override
+    public double getData(int t) {
+        Double f = values.get(t);
         if (f == null) {
             return defaultValue;
         }
         return f;
     }
 
-    public float[] getMinMax(long start, long end) {
+    @Override
+    public double[] getData() {
+        int size = size();
+        double[] n = new double[size];
+        int j = 0;
+        for (int i = getStart(); i <= getEnd(); i++) {
+            n[j++] = getData(i);
+        }
+        return n;
+    }
+
+    @Override
+    public TreeMLData clone() {
+        return new TreeMLData(this);
+    }
+
+    
+    
+    public double[] getMinMax(int start, int end) {
         if (specificRange)
             return specificMinMax;
         
-        float min=Float.POSITIVE_INFINITY, max=Float.NEGATIVE_INFINITY;
-        for (long i = start; i < end; i++) {
+        double min=Double.POSITIVE_INFINITY, max=Double.NEGATIVE_INFINITY;
+        for (int i = start; i < end; i++) {
             
-            Float v = values.get(i);
+            Double v = values.get(i);
             if (v == null)
                 continue;
             
@@ -90,32 +149,44 @@ public class TimeSeries {
                 if (v > max) max = v;
             }
         }
-        return new float[] { min, max };
+        return new double[] { min, max };
     }
 
-    public float[] getMinMax() {
+    @Override
+    public int size() {
+        return (int) (getEnd() - getStart());
+    }
+
+    
+    public double[] getMinMax() {
         return getMinMax(getStart(), getEnd());
     }
 
+    @Override
+    public Centroid<MLData> createCentroid() {
+        return new BasicMLDataCentroid(this);
+    }
 
-    public static class FirstOrderDifferenceTimeSeries extends TimeSeries {
 
-        public final TimeSeries data;
+    
+    public static class FirstOrderDifferenceTimeSeries extends TreeMLData {
 
-        public FirstOrderDifferenceTimeSeries(String name, TimeSeries s) {
-            super(name, Swing.getColor(name, 0.8f, 0.8f), 1);
+        public final TreeMLData data;
+
+        public FirstOrderDifferenceTimeSeries(String name, TreeMLData s) {
+            super(name, Video.getColor(name, 0.8f, 0.8f), 1);
             this.data = s;
         }
 
         @Override
-        public float getValue(final long t) {
-            float prev = data.getValue(t - 1);
-            if (Float.isNaN(prev)) {
+        public double getData(final int t) {
+            double prev = data.getData(t - 1);
+            if (Double.isNaN(prev)) {
                 return 0;
             }
 
-            float cur = data.getValue(t);
-            if (Float.isNaN(cur)) {
+            double cur = data.getData(t);
+            if (Double.isNaN(cur)) {
                 return 0;
             }
 
@@ -127,7 +198,7 @@ public class TimeSeries {
 }
 //
 ///**
-// * Use charts to display float array data as line chart, yet experimental, but see the ControlP5chart example
+// * Use charts to display double array data as line chart, yet experimental, but see the ControlP5chart example
 // * for more details.
 // * 
 // * @example controllers/ControlP5chart
@@ -148,13 +219,13 @@ public class TimeSeries {
 //
 //	protected final LinkedHashMap<String, ChartDataSet> _myDataSet;
 //
-//	protected float resolution = 1;
+//	protected double resolution = 1;
 //
-//	protected float strokeWeight = 1;
+//	protected double strokeWeight = 1;
 //
-//	protected float _myMin = 0;
+//	protected double _myMin = 0;
 //
-//	protected float _myMax = 1;
+//	protected double _myMax = 1;
 //
 //	/**
 //	 * Convenience constructor to extend Chart.
@@ -168,14 +239,14 @@ public class TimeSeries {
 //		theControlP5.register(theControlP5.papplet, theName, this);
 //	}
 //
-//	public Chart(ControlP5 theControlP5, ControllerGroup<?> theParent, String theName, float theX, float theY,
+//	public Chart(ControlP5 theControlP5, ControllerGroup<?> theParent, String theName, double theX, double theY,
 //			int theWidth, int theHeight) {
 //		super(theControlP5, theParent, theName, theX, theY, theWidth, theHeight);
 //		setRange(0, theHeight);
 //		_myDataSet = new LinkedHashMap<String, ChartDataSet>();
 //	}
 //
-//	public Chart setRange(float theMin, float theMax) {
+//	public Chart setRange(double theMin, double theMax) {
 //		_myMin = theMin;
 //		_myMax = theMax;
 //		return this;
@@ -199,19 +270,19 @@ public class TimeSeries {
 //		return this;
 //	}
 //
-//	public Chart addData(float theValue) {
+//	public Chart addData(double theValue) {
 //		ChartData cdi = new ChartData(theValue);
 //		getDataSet(getFirstDataSetIndex()).add(cdi);
 //		return this;
 //	}
 //
-//	public Chart addData(String theSetIndex, float theValue) {
+//	public Chart addData(String theSetIndex, double theValue) {
 //		ChartData cdi = new ChartData(theValue);
 //		getDataSet(theSetIndex).add(cdi);
 //		return this;
 //	}
 //
-//	public Chart addData(ChartDataSet theChartData, float theValue) {
+//	public Chart addData(ChartDataSet theChartData, double theValue) {
 //		ChartData cdi = new ChartData(theValue);
 //		theChartData.add(cdi);
 //		return this;
@@ -221,45 +292,45 @@ public class TimeSeries {
 //	// http://www.w3schools.com/jsref/jsref_obj_array.asp
 //
 //	/**
-//	 * adds a new float at the beginning of the data set.
+//	 * adds a new double at the beginning of the data set.
 //	 */
-//	public Chart unshift(float theValue) {
+//	public Chart unshift(double theValue) {
 //		return unshift(getFirstDataSetIndex(), theValue);
 //	}
 //
-//	public Chart unshift(String theSetIndex, float theValue) {
+//	public Chart unshift(String theSetIndex, double theValue) {
 //		if (getDataSet(theSetIndex).size() > (width / resolution)) {
 //			removeLast(theSetIndex);
 //		}
 //		return addFirst(theSetIndex, theValue);
 //	}
 //
-//	public Chart push(float theValue) {
-//		return push(getFirstDataSetIndex(), theValue);
+//	public Chart add(double theValue) {
+//		return add(getFirstDataSetIndex(), theValue);
 //	}
 //
-//	public Chart push(String theSetIndex, float theValue) {
+//	public Chart add(String theSetIndex, double theValue) {
 //		if (getDataSet(theSetIndex).size() > (width / resolution)) {
 //			removeFirst(theSetIndex);
 //		}
 //		return addLast(theSetIndex, theValue);
 //	}
 //
-//	public Chart addFirst(float theValue) {
+//	public Chart addFirst(double theValue) {
 //		return addFirst(getFirstDataSetIndex(), theValue);
 //	}
 //
-//	public Chart addFirst(String theSetIndex, float theValue) {
+//	public Chart addFirst(String theSetIndex, double theValue) {
 //		ChartData cdi = new ChartData(theValue);
 //		getDataSet(theSetIndex).add(0, cdi);
 //		return this;
 //	}
 //
-//	public Chart addLast(float theValue) {
+//	public Chart addLast(double theValue) {
 //		return addLast(getFirstDataSetIndex(), theValue);
 //	}
 //
-//	public Chart addLast(String theSetIndex, float theValue) {
+//	public Chart addLast(String theSetIndex, double theValue) {
 //		ChartData cdi = new ChartData(theValue);
 //		getDataSet(theSetIndex).add(cdi);
 //		return this;
@@ -334,12 +405,12 @@ public class TimeSeries {
 //		return this;
 //	}
 //
-//	public Chart setData(float... theValues) {
+//	public Chart setData(double... theValues) {
 //		setData(getFirstDataSetIndex(), theValues);
 //		return this;
 //	}
 //
-//	public Chart setData(String theSetIndex, float... theValues) {
+//	public Chart setData(String theSetIndex, double... theValues) {
 //		if (getDataSet().get(theSetIndex).size() != theValues.length) {
 //			getDataSet().get(theSetIndex).clear();
 //			for (int i = 0; i < theValues.length; i++) {
@@ -347,18 +418,18 @@ public class TimeSeries {
 //			}
 //		}
 //		int n = 0;
-//		resolution = (float) width / (getDataSet().get(theSetIndex).size() - 1);
-//		for (float f : theValues) {
+//		resolution = (double) width / (getDataSet().get(theSetIndex).size() - 1);
+//		for (double f : theValues) {
 //			getDataSet().get(theSetIndex).get(n++).setValue(f);
 //		}
 //		return this;
 //	}
 //
-//	public Chart updateData(float... theValues) {
+//	public Chart updateData(double... theValues) {
 //		return setData(theValues);
 //	}
 //
-//	public Chart updateData(String theSetIndex, float... theValues) {
+//	public Chart updateData(String theSetIndex, double... theValues) {
 //		return setData(theSetIndex, theValues);
 //	}
 //
@@ -370,7 +441,7 @@ public class TimeSeries {
 //		return getDataSet().get(theIndex);
 //	}
 //
-//	public float[] getValuesFrom(String theIndex) {
+//	public double[] getValuesFrom(String theIndex) {
 //		return getDataSet(theIndex).getValues();
 //	}
 //
@@ -391,12 +462,12 @@ public class TimeSeries {
 //	}
 //
 //	@Override
-//	public Chart setValue(float theValue) {
+//	public Chart setValue(double theValue) {
 //		// TODO Auto-generated method stub
 //		return this;
 //	}
 //
-//	public Chart setStrokeWeight(float theWeight) {
+//	public Chart setStrokeWeight(double theWeight) {
 //		strokeWeight = theWeight;
 //		for (ChartDataSet c : getDataSet().values()) {
 //			c.setStrokeWeight(theWeight);
@@ -404,7 +475,7 @@ public class TimeSeries {
 //		return this;
 //	}
 //
-//	public float getStrokeWeight() {
+//	public double getStrokeWeight() {
 //		return strokeWeight;
 //	}
 //
@@ -457,14 +528,14 @@ public class TimeSeries {
 //
 //			Iterator<String> it = getDataSet().keySet().iterator();
 //			String index = null;
-//			float o = 0;
+//			double o = 0;
 //			while (it.hasNext()) {
 //				index = it.next();
-//				float s = getDataSet(index).size();
+//				double s = getDataSet(index).size();
 //				for (int i = 0; i < s; i++) {
 //					theApplet.fill(getDataSet(index).getColor(i));
-//					float ww = ((width / s));
-//					float hh = PApplet.map(getDataSet(index).get(i).getValue(), _myMin, _myMax, 0, getHeight());
+//					double ww = ((width / s));
+//					double hh = PApplet.map(getDataSet(index).get(i).getData(), _myMin, _myMax, 0, getHeight());
 //					theApplet.rect(o + i * ww, getHeight(), (ww / getDataSet().size()),
 //						-PApplet.min(getHeight(), PApplet.max(0, hh)));
 //				}
@@ -485,21 +556,21 @@ public class TimeSeries {
 //
 //			Iterator<String> it = getDataSet().keySet().iterator();
 //			String index = null;
-//			float o = 0;
+//			double o = 0;
 //			int n = 4;
 //			int off = (getDataSet().size() - 1) * n;
 //			while (it.hasNext()) {
 //				index = it.next();
 //				int s = getDataSet(index).size();
-//				float step = (float) width / (float) (s);
-//				float ww = step - (width % step);
+//				double step = (double) width / (double) (s);
+//				double ww = step - (width % step);
 //				ww -= 1;
 //				ww = PApplet.max(1, ww);
 //
 //				for (int i = 0; i < s; i++) {
 //					theApplet.fill(getDataSet(index).getColor(i));
 //					ww = ((width / s) * 0.5f);
-//					float hh = PApplet.map(getDataSet(index).get(i).getValue(), _myMin, _myMax, 0, getHeight());
+//					double hh = PApplet.map(getDataSet(index).get(i).getData(), _myMin, _myMax, 0, getHeight());
 //					theApplet.rect(-off / 2 + o + i * ((width / s)) + ww / 2, getHeight(), ww,
 //						-PApplet.min(getHeight(), PApplet.max(0, hh)));
 //				}
@@ -526,9 +597,9 @@ public class TimeSeries {
 //				theApplet.strokeWeight(getDataSet(index).getStrokeWeight());
 //
 //				theApplet.beginShape();
-//				float res = ((float) getWidth()) / (getDataSet(index).size() - 1);
+//				double res = ((double) getWidth()) / (getDataSet(index).size() - 1);
 //				for (int i = 0; i < getDataSet(index).size(); i++) {
-//					float hh = PApplet.map(getDataSet(index).get(i).getValue(), _myMin, _myMax, getHeight(), 0);
+//					double hh = PApplet.map(getDataSet(index).get(i).getData(), _myMin, _myMax, getHeight(), 0);
 //					theApplet.vertex(i * res, PApplet.min(getHeight(), PApplet.max(0, hh)));
 //				}
 //				theApplet.endShape();
@@ -552,14 +623,14 @@ public class TimeSeries {
 //			String index = null;
 //			while (it.hasNext()) {
 //				index = it.next();
-//				float res = ((float) getWidth()) / (getDataSet(index).size() - 1);
+//				double res = ((double) getWidth()) / (getDataSet(index).size() - 1);
 //
 //				theApplet.fill(getDataSet(index).getColor(0));
 //				theApplet.beginShape();
 //				theApplet.vertex(0, getHeight());
 //
 //				for (int i = 0; i < getDataSet(index).size(); i++) {
-//					float hh = PApplet.map(getDataSet(index).get(i).getValue(), _myMin, _myMax, getHeight(), 0);
+//					double hh = PApplet.map(getDataSet(index).get(i).getData(), _myMin, _myMax, getHeight(), 0);
 //					theApplet.vertex(i * res, PApplet.min(getHeight(), PApplet.max(0, hh)));
 //				}
 //				theApplet.vertex(getWidth(), getHeight());
@@ -581,21 +652,21 @@ public class TimeSeries {
 //			String index = null;
 //			while (it.hasNext()) {
 //				index = it.next();
-//				float total = 0;
+//				double total = 0;
 //				for (int i = 0; i < getDataSet(index).size(); i++) {
-//					total += getDataSet(index).get(i).getValue();
+//					total += getDataSet(index).get(i).getData();
 //				}
 //
-//				float segment = ControlP5.TWO_PI / total;
-//				float angle = -ControlP5.HALF_PI;
+//				double segment = ControlP5.TWO_PI / total;
+//				double angle = -ControlP5.HALF_PI;
 //
 //				theApplet.noStroke();
 //				for (int i = 0; i < getDataSet(index).size(); i++) {
 //					theApplet.fill(getDataSet(index).getColor(i));
-//					float nextAngle = angle + getDataSet(index).get(i).getValue() * segment;
+//					double nextAngle = angle + getDataSet(index).get(i).getData() * segment;
 //
 //					// a tiny offset to even out render artifacts when in smooth() mode.
-//					float a = PApplet.max(0, PApplet.map(getWidth(), 0, 200, 0.05f, 0.01f));
+//					double a = PApplet.max(0, PApplet.map(getWidth(), 0, 200, 0.05f, 0.01f));
 //
 //					theApplet.arc(0, 0, getWidth(), getHeight(), angle - a, nextAngle);
 //					angle = nextAngle;
@@ -638,7 +709,7 @@ public class TimeSeries {
 //
 //	@Override
 //	public String toString() {
-//		return super.toString() + " [ " + getValue() + " ]" + " Chart " + "(" + this.getClass().getSuperclass() + ")";
+//		return super.toString() + " [ " + getData() + " ]" + " Chart " + "(" + this.getClass().getSuperclass() + ")";
 //	}
 //
 //}

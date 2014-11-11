@@ -1,6 +1,7 @@
 package automenta.vivisect.graph;
 
 import static automenta.vivisect.graph.GraphDisplay.Shape.Ellipse;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,6 +29,7 @@ abstract public class ProcessingGraphCanvas<V, E> extends PApplet {
     Hnav hnav = new Hnav();
     Hsim hsim = new Hsim();
 
+    float zoom = 0.1f;
     float scale = 1f;
     float selection_distance = 10;
     float FrameRate = 25f;    
@@ -48,6 +50,7 @@ abstract public class ProcessingGraphCanvas<V, E> extends PApplet {
 
     boolean autofetch = true;
     boolean updateNext;
+    float arrowHeadScale = 1f/16f;
 
     
 
@@ -87,13 +90,12 @@ abstract public class ProcessingGraphCanvas<V, E> extends PApplet {
     
     public static class VertexDisplay<V,E> {
 
-        public float x, y, tx, ty;
-        public int color;
-        public float radius;
         public final V vertex;
+        public float x, y, tx, ty;        
+        public float radius;
         public float stroke;
         public String label;
-        public int textColor;
+        public int color, textColor, strokeColor;
         public Set<E> edges;
         public final ProcessingGraphCanvas<V,E> canvas;
 
@@ -105,6 +107,7 @@ abstract public class ProcessingGraphCanvas<V, E> extends PApplet {
             tx = x;
             ty = y;
             stroke = 0;            
+            strokeColor = 0;
 
             update(o);
         }
@@ -124,10 +127,11 @@ abstract public class ProcessingGraphCanvas<V, E> extends PApplet {
 
             //System.out.println(radius + " " + color + " " + label + " " + x + " " + y);
             
-            /*if (stroke > 0) {
-             stroke(Color.WHITE.getRGB());
-             strokeWeight(stroke);
-             }*/
+            if (stroke > 0) {
+                p.stroke(strokeColor);
+                p.strokeWeight(stroke*scale);
+            }
+            
             float r = radius * scale;
             if (r == 0)
                 return needsUpdate;
@@ -150,10 +154,11 @@ abstract public class ProcessingGraphCanvas<V, E> extends PApplet {
                 p.text(label, x*scale, y*scale);
             }
 
-            /*if (stroke > 0) {                
-             //reset stroke
-             noStroke();
-             }*/
+            if (stroke > 0) {                
+                //reset stroke
+                p.noStroke();
+            }
+            
             return needsUpdate;
         }
 
@@ -189,6 +194,8 @@ abstract public class ProcessingGraphCanvas<V, E> extends PApplet {
             this.radius = d.getVertexSize(o);
             this.color = d.getVertexColor(o);
             this.label = d.getVertexLabel(o);
+            this.stroke = d.getVertexStroke(o);
+            this.strokeColor = d.getVertexStrokeColor(o);
         }
 
         public void setPosition(final float x, final float y) {
@@ -441,18 +448,31 @@ abstract public class ProcessingGraphCanvas<V, E> extends PApplet {
         popMatrix();
     }
 
+    
     void drawArrow(final float x1, final float y1, final float x2, final float y2) {
         float cx = (x1 + x2) / 2f;
         float cy = (y1 + y2) / 2f;
         float len = (float) Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
         float a = (float) (Math.atan2(y2 - y1, x2 - x1) * 180.0 / Math.PI);
 
-        drawArrowAngle(x1, y1, len, a, len/8f /* nodeSize/16f*/);
+        drawArrowAngle(x1, y1, len, a, len * arrowHeadScale /* nodeSize/16f*/);
     }
 
     void drawLine(final float x1, final float y1, final float x2, final float y2) {
         line(x1, y1, x2, y2);
     }
+
+    public void setFrameRate(float frameRate) {
+        this.frameRate = frameRate;
+        frameRate(frameRate);
+    }
+
+    public float getFrameRate() {
+        return frameRate;
+    }
+    
+    
+    
 
     public void setUpdateNext() {
         updateNext = true;
@@ -464,7 +484,7 @@ abstract public class ProcessingGraphCanvas<V, E> extends PApplet {
         private float savepx = 0;
         private float savepy = 0;
         private int selID = 0;
-        private float zoom = 1.0f;
+        
         private float difx = 0;
         private float dify = 0;
         private int lastscr = 0;

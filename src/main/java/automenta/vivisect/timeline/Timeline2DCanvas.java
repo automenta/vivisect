@@ -33,8 +33,8 @@ public class Timeline2DCanvas extends PApplet {
     //display options to extract to a parameter class ----------------------------------------
     boolean showItemLabels = true;
     float textScale = 0.1f;
-    long cycleStart = 0;
-    long cycleEnd = 45;
+    int cycleStart = 0;
+    int cycleEnd = 45;
 
     public static class Camera {
         public float camX = 0f;

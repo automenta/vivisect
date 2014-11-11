@@ -5,11 +5,11 @@
  */
 package example;
 
+import automenta.vivisect.Video;
 import automenta.vivisect.graph.AnimatedProcessingGraphCanvas;
 import automenta.vivisect.graph.GraphDisplay;
 import automenta.vivisect.graph.ProcessingGraphCanvas;
 import automenta.vivisect.swing.NWindow;
-import automenta.vivisect.swing.Swing;
 import java.awt.Color;
 import org.jgrapht.Graph;
 
@@ -22,7 +22,7 @@ import org.jgrapht.graph.DirectedMultigraph;
 public class ViewDirectedGraph {
     
     
-    public static class DefaultDisplay implements GraphDisplay {
+    public static class DefaultDisplay<V,E> implements GraphDisplay<V,E> {
 
         long startTime = System.currentTimeMillis();
 
@@ -31,37 +31,37 @@ public class ViewDirectedGraph {
         }
         
         @Override
-        public Shape getVertexShape(Object v) {
+        public Shape getVertexShape(V v) {
             return Shape.Ellipse;
         }
 
         @Override
-        public String getVertexLabel(Object v) {
+        public String getVertexLabel(V v) {
             return v.toString();
         }
 
         @Override
-        public float getVertexSize(Object v) {
+        public float getVertexSize(V v) {
             return 16.0f + 7f * (float)Math.sin( getTime()*10f);
         }
 
         @Override
-        public int getVertexColor(Object o) {
-            return Swing.getColor(o.hashCode(), 0.75f, 0.95f, 0.75f).getRGB();
+        public int getVertexColor(V o) {
+            return Video.getColor(o.hashCode(), 0.75f, 0.95f, 0.75f).getRGB();
         }
 
         @Override
-        public float getEdgeThickness(Object edge, ProcessingGraphCanvas.VertexDisplay source, ProcessingGraphCanvas.VertexDisplay target) {
+        public float getEdgeThickness(E edge, ProcessingGraphCanvas.VertexDisplay source, ProcessingGraphCanvas.VertexDisplay target) {
             return 23.0f;
         }
 
         @Override
-        public int getEdgeColor(Object e) {
+        public int getEdgeColor(E e) {
             return Color.GRAY.getRGB();
         }
 
         @Override
-        public int getTextColor(Object v) {
+        public int getTextColor(V v) {
             return Color.WHITE.getRGB();
         }
 
@@ -69,6 +69,16 @@ public class ViewDirectedGraph {
         public boolean updateNext() {            
             //enables continuous animation
             return true;
+        }
+
+        @Override
+        public int getVertexStrokeColor(V v) {
+            return 0;
+        }
+
+        @Override
+        public float getVertexStroke(V v) {
+            return 0;
         }
         
         
