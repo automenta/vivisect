@@ -37,13 +37,13 @@ public class ViewDirectedGraph {
         }
 
         @Override
-        public void update(AbstractGraphVis g, EdgeVis e) {
+        public void update(AbstractGraphVis<V,E> g, EdgeVis<V,E> e) {
             e.thickness = 23f;
             e.color = gray;
         }
 
         @Override
-        public void update(final AbstractGraphVis g, final VertexVis v) {
+        public void update(final AbstractGraphVis<V,E> g, final VertexVis<V,E> v) {
             final Object o = v.vertex;
             
             v.shape = Shape.Ellipse;

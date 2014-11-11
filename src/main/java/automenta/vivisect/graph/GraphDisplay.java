@@ -13,8 +13,8 @@ public interface GraphDisplay<V,E> {
 
     public boolean updateNext();
 
-    public void update(AbstractGraphVis g, VertexVis v);
-    public void update(AbstractGraphVis g, EdgeVis e);
+    public void update(AbstractGraphVis<V,E> g, VertexVis<V,E> v);
+    public void update(AbstractGraphVis<V,E> g, EdgeVis<V,E> e);
 
     public static enum Shape { Rectangle, Ellipse };
 
