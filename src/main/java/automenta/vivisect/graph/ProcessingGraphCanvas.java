@@ -121,6 +121,8 @@ abstract public class ProcessingGraphCanvas<V, E> extends PApplet {
         public boolean draw(PApplet p, boolean text, float nodeSpeed, float scale) {
             boolean needsUpdate = update(nodeSpeed);
 
+            System.out.println(radius + " " + color + " " + label + " " + x + " " + y);
+            
             /*if (stroke > 0) {
              stroke(Color.WHITE.getRGB());
              strokeWeight(stroke);
@@ -155,6 +157,10 @@ abstract public class ProcessingGraphCanvas<V, E> extends PApplet {
         }
 
         protected boolean update(final float nodeSpeed) {
+            if (this.edges == null) {
+                if (canvas.currentGraph!=null)
+                    this.edges = canvas.currentGraph.edgesOf(vertex);
+            }
             x = (x * (1.0f - nodeSpeed) + tx * (nodeSpeed));
             y = (y * (1.0f - nodeSpeed) + ty * (nodeSpeed));
 
@@ -162,9 +168,7 @@ abstract public class ProcessingGraphCanvas<V, E> extends PApplet {
                 //keep animating if any vertex hasnt reached its target
                 return false;
             }
-       
-            label = canvas.display.getVertexLabel(vertex);
-            
+                   
             return true;
         }
         
@@ -179,10 +183,11 @@ abstract public class ProcessingGraphCanvas<V, E> extends PApplet {
         private void update(final V o) {
             GraphDisplay<V, E> d = canvas.display;
             
-            this.edges = canvas.currentGraph.edgesOf(o);
+            this.edges = null;
             this.textColor = d.getTextColor(o);
             this.radius = d.getVertexSize(o);
-            this.color = d.getVertexColor(o);            
+            this.color = d.getVertexColor(o);
+            this.label = d.getVertexLabel(o);
         }
 
         public void setPosition(final float x, final float y) {

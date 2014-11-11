@@ -403,37 +403,39 @@ public class FastOrganicLayout<V, E> {
             
             V v = vd.getVertex();
             Set<E> edges = vd.getEdges();
-            List<V> cells = new ArrayList(edges.size());
-            for (E e : edges) {
-                if (isResetEdges()) {
-                    //graph.resetEdge(edges[k]);
+            if (edges!=null) {
+                List<V> cells = new ArrayList(edges.size());
+                for (E e : edges) {
+                    if (isResetEdges()) {
+                        //graph.resetEdge(edges[k]);
+                    }
+
+                    if (isDisableEdgeStyle()) {
+                        //setEdgeStyleEnabled(edges[k], false);
+                    }
+
+                    V source = graph.getEdgeSource(e);
+                    V target = graph.getEdgeTarget(e);
+                    if (source!=v)  cells.add(source);
+                    else if (target!=v)  cells.add(target);
                 }
 
-                if (isDisableEdgeStyle()) {
-                    //setEdgeStyleEnabled(edges[k], false);
-                }
+                neighbors[i] = new int[cells.size()];
 
-                V source = graph.getEdgeSource(e);
-                V target = graph.getEdgeTarget(e);
-                if (source!=v)  cells.add(source);
-                else if (target!=v)  cells.add(target);
-            }
+                for (int j = 0; j < cells.size(); j++) {
+                    Integer index = indices.get(cells.get(j));
 
-            neighbors[i] = new int[cells.size()];
-
-            for (int j = 0; j < cells.size(); j++) {
-                Integer index = indices.get(cells.get(j));
-
-                                    // Check the connected cell in part of the vertex list to be
-                // acted on by this layout
-                if (index != null) {
-                    neighbors[i][j] = index.intValue();
-                } // Else if index of the other cell doesn't correspond to
-                // any cell listed to be acted upon in this layout. Set
-                // the index to the value of this vertex (a dummy self-loop)
-                // so the attraction force of the edge is not calculated
-                else {
-                    neighbors[i][j] = i;
+                                        // Check the connected cell in part of the vertex list to be
+                    // acted on by this layout
+                    if (index != null) {
+                        neighbors[i][j] = index.intValue();
+                    } // Else if index of the other cell doesn't correspond to
+                    // any cell listed to be acted upon in this layout. Set
+                    // the index to the value of this vertex (a dummy self-loop)
+                    // so the attraction force of the edge is not calculated
+                    else {
+                        neighbors[i][j] = i;
+                    }
                 }
             }
         }

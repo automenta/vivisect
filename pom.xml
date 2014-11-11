@@ -9,16 +9,25 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-    </properties>
-    <dependencies>
         
+    </properties>
+    
+    <repositories>
+        <repository>
+            <id>processing</id>
+            <name>Processing</name>
+            <url>file://${project.basedir}/lib</url>
+        </repository>
+    </repositories>
+        
+    <dependencies>
         <dependency>
+
             <groupId>processing</groupId>
             <artifactId>core</artifactId>
-            <version>3.0a</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/processing_org-core.jar</systemPath>
+            <version>3.0</version>
         </dependency>
+
 
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -27,18 +36,19 @@
         </dependency>
 
 
-<dependency>
-	<groupId>org.boofcv</groupId>
-	<artifactId>ip</artifactId>
-	<version>0.18</version>
-</dependency>
+        <dependency>
+            <groupId>org.boofcv</groupId>
+            <artifactId>ip</artifactId>
+            <version>0.18</version>
+        </dependency>
 
 
         <dependency>
-            <groupId>jgrapht</groupId>
-            <artifactId>jgrapht</artifactId>
-            <version>0.7.3</version>
+            <groupId>org.jgrapht</groupId>
+            <artifactId>jgrapht-core</artifactId>
+            <version>0.9.0</version>
         </dependency>
+
 
         <dependency>
             <groupId>org.tinyjee.jgraphx</groupId>

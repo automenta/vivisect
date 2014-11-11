@@ -5,6 +5,9 @@
  */
 package automenta.vivisect;
 
+import automenta.vivisect.swing.Swing;
+import java.awt.Color;
+
 /**
  *
  * @author me
@@ -31,5 +34,21 @@ public class Video {
 
       return ((int)a << 24) | ((int)x << 16) | ((int)y << 8) | (int)z;
   }
+  
+    public static int getColor(final String s, final float alpha) {
+        double hue = (((double)s.hashCode()) / Integer.MAX_VALUE);
+        return Swing.getColor(Color.getHSBColor((float)hue,0.8f,0.9f), alpha).getRGB();        
+    }
+    
+
+    public static int getColor(final Class c) {            
+        double hue = (((double)c.hashCode()) / Integer.MAX_VALUE);
+        return Color.getHSBColor((float)hue,0.8f,0.9f).getRGB();                
+    }
+    
+    public static int getColor(final String s) {            
+        double hue = (((double)s.hashCode()) / Integer.MAX_VALUE);
+        return Color.getHSBColor((float)hue,0.8f,0.9f).getRGB();        
+    }
   
 }
