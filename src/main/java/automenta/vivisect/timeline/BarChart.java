@@ -19,7 +19,7 @@ public class BarChart extends LineChart {
         ccolor = chart.getColor().getRGB();
         l.g.noStroke();
         for (int t = l.cycleStart; t < l.cycleEnd; t++) {
-            float x = t * timeScale;
+            float x = (t-l.cycleStart) * timeScale;
             float v = (float)chart.getData(t);
             
             if (Float.isNaN(v)) {
@@ -27,11 +27,11 @@ public class BarChart extends LineChart {
             }
             
             float p = (max == min) ? 0 : (float) ((v - min) / (max - min));
-            float px = x;
+            float px = width * x;
             float h = p * yScale1;
             float py = y + yScale1 - h;
             l.g.fill(ccolor, 255f * (0.5f + 0.5f * p));
-            l.g.rect(px, py, timeScale * barWidth, h);
+            l.g.rect(px, py, width * timeScale * barWidth, h);
         }
     }
 }

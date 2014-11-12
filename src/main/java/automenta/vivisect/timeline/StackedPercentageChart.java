@@ -51,16 +51,16 @@ public class StackedPercentageChart extends LineChart {
                 float ly = 0;
                 l.g.strokeWeight(1f);
                 l.g.fill(255f);
-                float x = t * timeScale;
+                float x = (t - l.cycleStart) * timeScale;
                 float v = (float)chart.getData(t);
                 if (Float.isNaN(v)) {
                     continue;
                 }
                 float p = v / total;
-                float px = x;
+                float px = width * x;
                 float h = p * yScale;
                 l.g.fill(ccolor, 255f * (0.5f + 0.5f * p));
-                l.g.rect(px, sy + gap / 2, timeScale * barWidth, h - gap / 2);
+                l.g.rect(px, sy + gap / 2, width * timeScale * barWidth, h - gap / 2);
                 sy += h;
             }
         }

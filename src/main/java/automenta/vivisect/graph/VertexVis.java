@@ -97,7 +97,10 @@ public class VertexVis<V, E> {
         if (!children.isEmpty()) {
             p.pushMatrix();
             p.translate(x*scale, y*scale);
-            for (Vis child: children) {
+            p.scale(radius/32f, radius/32f);
+            
+            for (int i = 0; i < children.size(); i++) {
+                final Vis child = children.get(i);
                 child.draw(p);
             }
             p.popMatrix();

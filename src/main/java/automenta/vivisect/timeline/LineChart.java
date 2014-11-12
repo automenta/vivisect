@@ -10,7 +10,7 @@ public class LineChart extends Chart {
     float max;
     boolean showVerticalLines = false;
     boolean showPoints = true;
-    float lineThickness = 1.5f;
+    float lineThickness = 2.5f;
     float borderThickness = 0.5f;
     private int end;
     private int start;
@@ -39,9 +39,9 @@ public class LineChart extends Chart {
         l.g.stroke(127);
         l.g.strokeWeight(borderThickness);
         //bottom line
-        l.g.line(0, y + yScale, (l.cycleEnd-l.cycleStart) * timeScale, y + yScale);
+        l.g.line(0, y + yScale, width * (l.cycleEnd-l.cycleStart) * timeScale, y + yScale);
         //top line
-        l.g.line(0, y, (l.cycleEnd-l.cycleStart) * timeScale, y);
+        l.g.line(0, y, width * (l.cycleEnd-l.cycleStart) * timeScale, y);
         drawData(l, timeScale, yScale, y);
         
         if (overlayEnable) {
@@ -100,7 +100,7 @@ public class LineChart extends Chart {
                 }
                 
                 float p = (float)((max == min) ? 0 : (double) ((v - min) / (max - min)));
-                float px = x;
+                float px = width * x;
                 float h = p * yScale1;
                 float py = y + yScale1 - h;
                                 
