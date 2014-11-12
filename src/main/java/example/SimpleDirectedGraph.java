@@ -6,6 +6,7 @@
 package example;
 
 import automenta.vivisect.Video;
+import automenta.vivisect.dimensionalize.AbegoTreeLayout;
 import automenta.vivisect.dimensionalize.FastOrganicLayout;
 import automenta.vivisect.graph.AnimatingGraphVis;
 import automenta.vivisect.graph.GraphDisplay;
@@ -75,13 +76,13 @@ public class SimpleDirectedGraph {
         
     }
 
-    public SimpleDirectedGraph(Graph g) {
+    public SimpleDirectedGraph(Graph g, GraphDisplay layout) {
         
         new NWindow("Directed Graph", 
                 new PCanvas( 
                         new AnimatingGraphVis(g, 
                                 new DefaultDisplay(),
-                                new FastOrganicLayout()
+                                layout                                
                         )
                 )
         ).show(800,800,true);
@@ -95,7 +96,9 @@ public class SimpleDirectedGraph {
         g.addVertex("B");
         g.addEdge("A","B",1);
         
-        new SimpleDirectedGraph(g);        
+        new SimpleDirectedGraph(g, new FastOrganicLayout());
+        
+                                        
     }
     
 }

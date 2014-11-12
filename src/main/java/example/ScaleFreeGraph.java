@@ -5,6 +5,7 @@
  */
 package example;
 
+import automenta.vivisect.dimensionalize.FastOrganicLayout;
 import org.jgrapht.Graph;
 import org.jgrapht.VertexFactory;
 import org.jgrapht.generate.ScaleFreeGraphGenerator;
@@ -16,20 +17,18 @@ import org.jgrapht.graph.DirectedPseudograph;
  * @author me
  */
 public class ScaleFreeGraph {
- 
-        
-    public static void main(String[] args) {
-    VertexFactory<Object> vertexFactory =
-        new VertexFactory<Object>() {
-            private int i;
 
-            public Object createVertex()
-            {
-                return new Integer(++i);
-            }
-        };
+    public static void main(String[] args) {
+        VertexFactory<Object> vertexFactory
+                = new VertexFactory<Object>() {
+                    private int i;
+
+                    public Object createVertex() {
+                        return new Integer(++i);
+                    }
+                };
         Graph g = new DirectedPseudograph(DefaultEdge.class);
         new ScaleFreeGraphGenerator<>(16).generateGraph(g, vertexFactory, null);
-        new SimpleDirectedGraph(g);        
+        new SimpleDirectedGraph(g, new FastOrganicLayout());
     }
 }

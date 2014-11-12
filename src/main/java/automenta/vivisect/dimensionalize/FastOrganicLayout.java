@@ -289,11 +289,8 @@ public class FastOrganicLayout<V, E> implements GraphDisplay<V,E> {
         temperature = initialTemp * (1.0 - iteration / maxIterations);
     }
 
-    /* (non-Javadoc)
-     * @see com.mxgraph.layout.mxIGraphLayout#execute(java.lang.Object)
-     */
-    public synchronized void execute(AbstractGraphVis<V,E> canvas) {
-        Graph<V,E> graph = canvas.getGraph();
+    @Override public boolean postUpdate(AbstractGraphVis<V,E> g) {
+        Graph<V,E> graph = g.getGraph();
 
         if (indices == null)
             indices = new HashMap<>();
@@ -307,7 +304,7 @@ public class FastOrganicLayout<V, E> implements GraphDisplay<V,E> {
             vertexArray.clear();
         
         for (V v : graph.vertexSet()) {
-            VertexVis vd = canvas.getVertexDisplay(v);
+            VertexVis vd = g.getVertexDisplay(v);
             if (vd == null) continue;
             if (vd.getRadius() == 0) continue;
             vertexArray.add(vd);
@@ -453,7 +450,7 @@ public class FastOrganicLayout<V, E> implements GraphDisplay<V,E> {
         try {
             for (iteration = 0; iteration < maxIterations; iteration++) {
                 if (!allowedToRun) {
-                    return;
+                    return false;
                 }
 
                 // Calculate repulsive forces on all vertex
@@ -510,7 +507,8 @@ public class FastOrganicLayout<V, E> implements GraphDisplay<V,E> {
             VertexVis vd = vertexArray.get(i);          
             vd.movePosition((float)dx, (float)dy);
         }
-            
+
+        return true;
     }
 
     /**
@@ -670,11 +668,7 @@ public class FastOrganicLayout<V, E> implements GraphDisplay<V,E> {
     public void edge(AbstractGraphVis<V, E> g, EdgeVis<V, E> e) {
     }
 
-    @Override
-    public boolean postUpdate(AbstractGraphVis<V,E> g) {
-        execute(g);
-        return true;
-    }
+    
 
 
 }

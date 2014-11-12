@@ -42,6 +42,13 @@ public class VertexVis<V, E> {
     }
 
     @Override
+    public String toString() {
+        return "vis[" + vertex.toString() + "]";
+    }
+
+    
+            
+    @Override
     public int hashCode() {
         return vertex.hashCode();
     }
