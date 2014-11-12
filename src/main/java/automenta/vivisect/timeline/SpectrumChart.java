@@ -82,7 +82,7 @@ public class SpectrumChart extends LineChart {
     }
     
     @Override
-    protected void drawData(Timeline2DCanvas l, float timeScale, float yScale, float y) {
+    protected void drawData(TimelineVis l, float timeScale, float yScale, float y) {
     
         TreeMLData chart = sensors.get(0);
         
@@ -94,7 +94,7 @@ public class SpectrumChart extends LineChart {
         int ccolor = 0;
         
         ccolor = chart.getColor().getRGB();
-        l.noStroke();
+        l.g.noStroke();
 
         long prevWindow = -1;
         float yh = yScale / windowSize;
@@ -121,10 +121,10 @@ public class SpectrumChart extends LineChart {
                     
                     float phase = (win.phase[f] + (float)Math.PI*2f) / ((float)Math.PI*2f);
                     
-                    l.fill((0.2f + 0.3f * phase) * 255f, 0.75f * 255f, m * 255f);
+                    l.g.fill((0.2f + 0.3f * phase) * 255f, 0.75f * 255f, m * 255f);
                     
                     yy -= yh;
-                    l.rect(x, y + yy, x2 - x, yh);
+                    l.g.rect(x, y + yy, x2 - x, yh);
                 }
                 
                 prevWindow = w;

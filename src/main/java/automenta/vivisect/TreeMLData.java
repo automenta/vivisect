@@ -56,8 +56,16 @@ public class TreeMLData implements MLData {
         return colour;
     }
 
-    public int getStart() { return values.firstKey(); }
-    public int getEnd() { return values.lastKey(); }
+    public int getStart() { 
+        if (values.isEmpty())
+            return 0;
+        return values.firstKey(); 
+    }
+    public int getEnd() { 
+        if (values.isEmpty())
+            return 0;
+        return values.lastKey(); 
+    }
 
     @Override
     public void clear() {
@@ -74,14 +82,15 @@ public class TreeMLData implements MLData {
     @Override
     public void setData(final int t, final double f) {
         
+        values.put(t, f);
+
         if (capacity!=-1) {
             while (values.size() > capacity) {
-                //TODO configurable removal policy
+                //TODO configurable removal policy                
                 values.remove(values.firstKey());            
             }
         }
         
-        values.put(t, f);
     }
 
     /** clears the values and sets the data as if it were an array, starting at index 0 */
@@ -165,6 +174,13 @@ public class TreeMLData implements MLData {
     @Override
     public Centroid<MLData> createCentroid() {
         return new BasicMLDataCentroid(this);
+    }
+
+    public void push(double v) {
+        if (values.isEmpty())
+            setData(0, v);
+        else
+            setData(getEnd()+1, v);
     }
 
 

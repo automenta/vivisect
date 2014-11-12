@@ -7,11 +7,12 @@ package example;
 
 import automenta.vivisect.TreeMLData;
 import automenta.vivisect.swing.NWindow;
+import automenta.vivisect.swing.PCanvas;
 import automenta.vivisect.timeline.BarChart;
 import automenta.vivisect.timeline.LineChart;
 import automenta.vivisect.timeline.SpectrumChart;
 import automenta.vivisect.timeline.StackedPercentageChart;
-import automenta.vivisect.timeline.Timeline2DCanvas;
+import automenta.vivisect.timeline.TimelineVis;
 import java.awt.Color;
 import java.util.UUID;
 
@@ -40,11 +41,13 @@ public class TimelineCharts {
         TreeMLData c = new RandomTimeSeries(1000, 0.6f);
         
         
-        new NWindow("_", new Timeline2DCanvas(
-            new StackedPercentageChart(a, b, c).height(4),
-            new LineChart(a, b).height(3f),
-            new BarChart(c).height(2.5f),
-            new SpectrumChart(c, 7).height(3f)
+        new NWindow("_", 
+                new PCanvas(
+                        new TimelineVis(
+                            new StackedPercentageChart(a, b, c).height(4),
+                            new LineChart(a, b).height(3f),
+                            new BarChart(c).height(2.5f),
+                            new SpectrumChart(c, 7).height(3f)
 //
 //            
 //            new LineChart(t.getCharts("task.novel.add", "task.immediate_processed")).height(3),
@@ -52,7 +55,7 @@ public class TimelineCharts {
 //            new LineChart(t.getCharts("emotion.busy")).height(1),
 //            new BarChart(new TreeMLData.FirstOrderDifferenceTimeSeries("d(concepts)", t.charts.get("concept.count"))),
             
-        )).show(800, 800, true);
+                        ))).show(800, 800, true);
         
         
     }

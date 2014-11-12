@@ -22,15 +22,17 @@ public abstract class Chart {
     }
 
     //called during NAR thread
-    public void update(Timeline2DCanvas l, float timeScale, float yScale) {
+    public void update(TimelineVis l, float timeScale, float yScale) {
     }
 
     //called during Swing thread
-    public abstract void draw(Timeline2DCanvas l, float y, float timeScale, float yScale);
+    public abstract void draw(TimelineVis l, float y, float timeScale, float yScale);
 
     public float getHeight() {
         return height;
     }
     
+    abstract public int getStart();
+    abstract public int getEnd();
     
 }

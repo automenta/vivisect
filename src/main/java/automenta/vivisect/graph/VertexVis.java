@@ -5,7 +5,10 @@
  */
 package automenta.vivisect.graph;
 
+import automenta.vivisect.Vis;
 import automenta.vivisect.graph.GraphDisplay.Shape;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import processing.core.PGraphics;
 
@@ -29,6 +32,7 @@ public class VertexVis<V, E> {
     public Set<E> edges;
     public Shape shape;
     public float speed;
+    public final List<Vis> children = new ArrayList();
 
     public VertexVis(V o) {
         this.vertex = o;
@@ -88,6 +92,17 @@ public class VertexVis<V, E> {
             //reset stroke
             p.noStroke();
         }
+        
+        
+        if (!children.isEmpty()) {
+            p.pushMatrix();
+            p.translate(x*scale, y*scale);
+            for (Vis child: children) {
+                child.draw(p);
+            }
+            p.popMatrix();
+        }
+        
         return needsUpdate;
     }
 

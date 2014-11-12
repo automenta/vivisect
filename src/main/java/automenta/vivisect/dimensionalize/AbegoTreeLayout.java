@@ -27,7 +27,7 @@ import org.jgrapht.traverse.BreadthFirstIterator;
 
 /**
  *
- * @author me
+ * Also able to handle forests (multi-roots)
  */
 public class AbegoTreeLayout<V,E> implements GraphDisplay<V,E> {
 

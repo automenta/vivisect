@@ -12,6 +12,9 @@ public class LineChart extends Chart {
     boolean showPoints = true;
     float lineThickness = 1.5f;
     float borderThickness = 0.5f;
+    private int end;
+    private int start;
+    boolean overlayEnable = false;
 
   
 
@@ -20,25 +23,33 @@ public class LineChart extends Chart {
         this.sensors = Arrays.asList(series);
     }
 
+    public void setOverlayEnable(boolean overlayEnable) {
+        this.overlayEnable = overlayEnable;
+    }
+
+    
 
 
     @Override
-    public void draw(Timeline2DCanvas l, float y, float timeScale, float yScale) {
+    public void draw(TimelineVis l, float y, float timeScale, float yScale) {
         yScale *= height;
-        float screenyHi = l.screenY(l.cycleStart * timeScale, y);
-        float screenyLo = l.screenY(l.cycleStart * timeScale, y + yScale);
+        float screenyHi = l.g.screenY(l.cycleStart * timeScale, y);
+        float screenyLo = l.g.screenY(l.cycleStart * timeScale, y + yScale);
         updateRange(l);
-        l.stroke(127);
-        l.strokeWeight(borderThickness);
+        l.g.stroke(127);
+        l.g.strokeWeight(borderThickness);
         //bottom line
-        l.line(l.cycleStart * timeScale, y + yScale, l.cycleEnd * timeScale, y + yScale);
+        l.g.line(0, y + yScale, (l.cycleEnd-l.cycleStart) * timeScale, y + yScale);
         //top line
-        l.line(l.cycleStart * timeScale, y, l.cycleEnd * timeScale, y);
+        l.g.line(0, y, (l.cycleEnd-l.cycleStart) * timeScale, y);
         drawData(l, timeScale, yScale, y);
-        drawOverlay(l, screenyLo, screenyHi);
+        
+        if (overlayEnable) {
+            drawOverlay(l, screenyLo, screenyHi);
+        }
     }
 
-    protected void updateRange(Timeline2DCanvas l) {
+    protected void updateRange(TimelineVis l) {
         min = Float.POSITIVE_INFINITY;
         max = Float.NEGATIVE_INFINITY;
         for (TreeMLData chart : sensors) {
@@ -49,39 +60,40 @@ public class LineChart extends Chart {
         
     }
 
-    protected void drawOverlay(Timeline2DCanvas l, float screenyLo, float screenyHi) {
+    protected void drawOverlay(TimelineVis l, float screenyLo, float screenyHi) {
         //draw overlay
-        l.pushMatrix();
-        l.resetMatrix();
-        l.textSize(15f);
+        l.g.pushMatrix();
+        l.g.resetMatrix();
+        l.g.textSize(15f);
         int dsy = (int) Math.abs(screenyLo - screenyHi);
         float dsyt = screenyHi + 0.15f * dsy;
         float ytspace = dsy * 0.75f / sensors.size() / 2;
         for (TreeMLData chart : sensors) {
-            l.fill(chart.getColor().getRGB());
+            l.g.fill(chart.getColor().getRGB());
             dsyt += ytspace;
-            l.text(chart.label, 0, dsyt);
+            l.g.text(chart.label, 0, dsyt);
             dsyt += ytspace;
         }
-        l.textSize(11f);
-        l.fill(200, 195f);
+        l.g.textSize(11f);
+        l.g.fill(200, 195f);
         
         //TODO number precision formatting
-        l.text("" + ((double) min), 0, screenyLo - dsy / 10f);
-        l.text("" + ((double) max), 0, screenyHi + dsy / 10f);
-        l.popMatrix();
+        l.g.text("" + ((double) min), 0, screenyLo - dsy / 10f);
+        l.g.text("" + ((double) max), 0, screenyHi + dsy / 10f);
+        l.g.popMatrix();
     }
 
-    protected void drawData(Timeline2DCanvas l, float timeScale1, float yScale1, float y) {
+    protected void drawData(TimelineVis l, float timeScale1, float yScale1, float y) {
         int ccolor = 0;
         for (TreeMLData chart : sensors) {
             ccolor = chart.getColor().getRGB();
             float lx = 0;
             float ly = 0;
-            l.fill(255f);
+            l.g.fill(255f);
             boolean firstPoint = false;
-            for (int t = l.cycleStart; t < l.cycleEnd; t++) {
-                float x = t * timeScale1;
+            int cs = l.cycleStart;
+            for (int t = cs; t < l.cycleEnd; t++) {
+                float x = (t-cs) * timeScale1;
                 float v = (float)chart.getData(t);
                 if (Float.isNaN(v)) {
                     continue;
@@ -93,15 +105,15 @@ public class LineChart extends Chart {
                 float py = y + yScale1 - h;
                                 
                 if (firstPoint) {
-                    l.strokeWeight(lineThickness);
+                    l.g.strokeWeight(lineThickness);
                     if (showVerticalLines) {
-                        l.stroke(ccolor, 127f);
-                        l.line(px, py, px, py + h);
+                        l.g.stroke(ccolor, 127f);
+                        l.g.line(px, py, px, py + h);
                     }
-                    l.stroke(ccolor);
+                    l.g.stroke(ccolor);
 
                     if (t != l.cycleStart) {
-                        l.line(lx, ly, px, py);
+                        l.g.line(lx, ly, px, py);
                     }
                 }
                 
@@ -111,13 +123,34 @@ public class LineChart extends Chart {
                 firstPoint = true;
                 
                 if (showPoints) {
-                    l.noStroke();
-                    l.fill(ccolor);
+                    l.g.noStroke();
+                    l.g.fill(ccolor);
                     float w = Math.min(timeScale1, yScale1) / 12f;
-                    l.rect(px - w / 2f, py - w / 2f, w, w);
+                    l.g.rect(px - w / 2f, py - w / 2f, w, w);
                 }
             }
         }
     }
+
+    @Override
+    public int getStart() {
+        start = Integer.MAX_VALUE;
+        end = 0;
+        for (TreeMLData s  : sensors) {
+            int ss = s.getStart();
+            int se = s.getEnd();
+                    
+            if (start > ss) start = ss;
+            if (end < se) end = se;
+        }
+        return start;
+    }
+
+    @Override
+    public int getEnd() {
+        //call getStart() prior to this
+        return end;
+    }
+    
     
 }
