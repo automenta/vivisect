@@ -7,6 +7,7 @@ package automenta.vivisect.graph;
 
 import automenta.vivisect.Vis;
 import automenta.vivisect.graph.GraphDisplay.Shape;
+import static automenta.vivisect.graph.GraphDisplay.Shape.Ellipse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -75,11 +76,13 @@ public class VertexVis<V, E> {
             return needsUpdate;
         }
         p.fill(color); //, alpha * 255 / 2);
+        if (shape == null) shape = Ellipse;
         switch (shape) {
             case Rectangle:
                 p.rect(x * scale - r / 2f, y * scale - r / 2f, r, r);
                 break;
             case Ellipse:
+            default:
                 p.ellipse(x * scale, y * scale, r, r);
                 break;
         }

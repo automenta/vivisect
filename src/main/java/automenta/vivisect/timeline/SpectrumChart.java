@@ -1,18 +1,22 @@
 package automenta.vivisect.timeline;
 
 import automenta.vivisect.TreeMLData;
-import boofcv.alg.transform.fft.GeneralPurposeFFT_F32_1D;
 import com.google.common.primitives.Floats;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.math3.complex.Complex;
+import org.apache.commons.math3.transform.DftNormalization;
+import org.apache.commons.math3.transform.FastFourierTransformer;
+import org.apache.commons.math3.transform.TransformType;
 
 
 public class SpectrumChart extends LineChart {
 
+    //http://commons.apache.org/proper/commons-math/javadocs/api-3.3/org/apache/commons/math3/transform/FastFourierTransformer.html
     //https://github.com/lessthanoptimal/BoofCV/blob/master/main/ip/test/boofcv/alg/transform/fft/TestGeneralPurposeFFT_F32_1D.java
     //https://github.com/lessthanoptimal/BoofCV/blob/master/main/ip/src/boofcv/alg/transform/fft/GeneralPurposeFFT_F32_1D.java
     
-    
+    FastFourierTransformer fft = new FastFourierTransformer(DftNormalization.STANDARD);
     float barWidth = 0.5f;
     private boolean updated = false;
     
@@ -20,14 +24,14 @@ public class SpectrumChart extends LineChart {
         float[] phase;
         float[] magnitude;        
 
-        Window(float[] input) {
+        Window(Complex[] input) {
             final int vl = input.length/2;
             magnitude = new float[vl];
             phase = new float[vl];
 
             for (int i = 0; i < vl; i++) {
-                float r = input[i*2];
-                float c = input[i*2+1];
+                float r = (float)input[i].getReal();
+                float c = (float)input[i].getImaginary();
                 magnitude[i] = (float)Math.sqrt( r*r + c*c );
                 phase[i] = (float)Math.atan2( c, r );
             }
@@ -57,17 +61,18 @@ public class SpectrumChart extends LineChart {
         for (int w = 0; w < numWindows; w++) {
             final int vl = windowSize;
 
-            float[] input = new float[vl*2];
-            for (int i = 0; i < vl; i++)
-                input[i*2] = (float)chart.getData(t++);
+            double[] input = new double[vl];
+            for (int i = 0; i < vl; i++) {
+                input[i] = (float)chart.getData(t++);
+            }
 
-            GeneralPurposeFFT_F32_1D x = new GeneralPurposeFFT_F32_1D(vl);
-            x.complexForward(input);
+            Complex[] c = fft.transform(input, TransformType.FORWARD);
+            
 
                     // phase = atan2( imaginary , real )
             // magnitude = sqrt( real<sup>2</sup> + imaginary<sup>2</sup> )
 
-            windows.add(new Window(input));
+            windows.add(new Window(c));
         }
         
         
