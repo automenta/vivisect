@@ -25,7 +25,7 @@ public class SpectrumChart extends LineChart {
         float[] magnitude;        
 
         Window(Complex[] input) {
-            final int vl = input.length/2;
+            final int vl = input.length;
             magnitude = new float[vl];
             phase = new float[vl];
 

@@ -3,43 +3,41 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package gremlin.display;
+package automenta.vivisect.graph.display;
 
 import automenta.vivisect.Video;
 import automenta.vivisect.graph.AbstractGraphVis;
 import automenta.vivisect.graph.EdgeVis;
 import automenta.vivisect.graph.VertexVis;
-import com.tinkerpop.blueprints.Edge;
-import com.tinkerpop.blueprints.Element;
-import com.tinkerpop.blueprints.Vertex;
 import example.SimpleDirectedGraph.DefaultDisplay;
-import java.util.Set;
 
 /**
  *
  * @author me
  */
-public class NeuralDisplay<V extends Vertex, E extends Edge> extends DefaultDisplay<V,E>  {
+abstract public class NeuralDisplay<V, E> extends DefaultDisplay<V,E>  {
 
     float baseSize = 32;
     final int strokeColor = Video.color(255, 255, 255, 70);
     final int defaultEdgeColor = Video.color(127,127,127,255);
 
-    public <T> T property(Element e, String id, T deefault) {
+    abstract public <T> T vertexProperty(V e, String id, T deefault);
+    abstract public <T> T edgeProperty(E e, String id, T deefault);
+    /*{
         if (e.getPropertyKeys().contains(id)) 
             return e.getProperty(id);
         return deefault;
-    }    
+    } */   
     
     @Override
     public void vertex(final AbstractGraphVis<V,E> g, final VertexVis<V,E> vv) {
         super.vertex(g, vv);
 
-        Vertex v = vv.getVertex();
+        V v = vv.getVertex();
         
-        Double signal = property(v, "signal", 0.5d);
-        Double activity = property(v, "activity", 0d);
-        String layer = property(v, "layer", v.toString());
+        Double signal = vertexProperty(v, "signal", 0.5d);
+        Double activity = vertexProperty(v, "activity", 0d);
+        String layer = vertexProperty(v, "layer", v.toString());
 
         float total = (float)(signal/4f + activity);
         
@@ -63,9 +61,9 @@ public class NeuralDisplay<V extends Vertex, E extends Edge> extends DefaultDisp
     public void edge(AbstractGraphVis<V, E> g, EdgeVis<V, E> ee) {
         super.edge(g, ee); //To change body of generated methods, choose Tools | Templates.
 
-        Edge e = ee.edge;
+        E e = ee.edge;
         
-        Double x = property(e, "signal", null);
+        Double x = edgeProperty(e, "signal", null);
         
         if (x == null)
             ee.color = defaultEdgeColor;
@@ -80,16 +78,11 @@ public class NeuralDisplay<V extends Vertex, E extends Edge> extends DefaultDisp
             }     
         }
 
-        Double w = property(e, "weight", 0.2d);
+        Double w = edgeProperty(e, "weight", 0.2d);
         float ax = (float)Math.abs(w);
         ee.thickness = 10f*ax + 20f;
         
     }
-   
-    
-    
-    
-
     
     
     

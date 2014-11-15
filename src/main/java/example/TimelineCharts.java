@@ -40,14 +40,14 @@ public class TimelineCharts {
         TreeMLData b = new RandomTimeSeries(1000, 0.9f);
         TreeMLData c = new RandomTimeSeries(1000, 0.6f);
         
-        
+        ArrayIndexOutOfBoundsException e;
         new NWindow("_", 
                 new PCanvas(
                         new TimelineVis(
                             new StackedPercentageChart(a, b, c).height(4),
                             new LineChart(a, b).height(3f),
                             new BarChart(c).height(2.5f),
-                            new SpectrumChart(c, 7).height(3f)
+                            new SpectrumChart(c, 8).height(3f)
 //
 //            
 //            new LineChart(t.getCharts("task.novel.add", "task.immediate_processed")).height(3),

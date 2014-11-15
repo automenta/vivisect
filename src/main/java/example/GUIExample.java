@@ -37,16 +37,16 @@ public class GUIExample {
             }
             
         });
-        p.setZoom(0.25f);
+        p.setZoom(0.55f);
         
-        b = new GButton(p, 50, 400, 100, 25, "OK");
-        new GSlider(p, -400,-400,100,20, 15);
-        new GSlider2D(p, -300,-300,600,600);
+        b = new GButton(p, 50, 200, 100, 25, "OK");
+        new GSlider(p, -200,-200,100,20, 15);
+        new GSlider2D(p, -100,-100,300,300);
         
-        GKnob k = new GKnob(p, 150,400,50,50, 0.25f);
+        GKnob k = new GKnob(p, 150,200,50,50, 0.25f);
         
         
-        new GTextField(p, -300, -400, 300, 50);
+        new GTextField(p, -100, -200, 300, 50);
         
         //new GWindow(p, "x", 10, 10, 100, 300, true, null);
         

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package gremlin;
+package automenta.vivisect.graph.display;
 
 import automenta.vivisect.TreeMLData;
 import automenta.vivisect.graph.AbstractGraphVis;
@@ -13,9 +13,6 @@ import automenta.vivisect.graph.VertexVis;
 import automenta.vivisect.timeline.LineChart;
 import automenta.vivisect.timeline.StackedPercentageChart;
 import automenta.vivisect.timeline.TimelineVis;
-import com.tinkerpop.blueprints.Edge;
-import com.tinkerpop.blueprints.Element;
-import com.tinkerpop.blueprints.Vertex;
 import java.awt.Color;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -24,7 +21,8 @@ import java.util.WeakHashMap;
  *
  * @author me
  */
-public class NeuralTimestream<V extends Vertex, E extends Edge> implements GraphDisplay<V,E>  {
+public class NeuralTimestream<V, E> implements GraphDisplay<V,E>  {
+    
     public class NeuralStream {
         public final TimelineVis timeline;
         private final VertexVis<V, E> neuron;
@@ -50,8 +48,8 @@ public class NeuralTimestream<V extends Vertex, E extends Edge> implements Graph
 //        
 //        Set<String> keys = v.getPropertyKeys();
 //        
-          Double signal = property(vertex, "signal", 0.5d);
-          Double activity = property(vertex, "activity", 0d);
+          double signal = 0; //vertexProperty(vertex, "signal", 0.5d);
+          double activity = 0; //property(vertex, "activity", 0d);
 //        String layer = property(v, "layer", v.toString());
 //
 //        float total = (float)(signal/4f + activity);
@@ -67,27 +65,28 @@ public class NeuralTimestream<V extends Vertex, E extends Edge> implements Graph
 //        else
 //            vv.stroke = 0;
 
-            this.activation.push(activity.doubleValue());
-            this.signal.push(signal.doubleValue());
+            this.activation.push(activity);
+            this.signal.push(signal);
         }
     }
     
     Map<VertexVis<V,E>,NeuralStream> streams = new WeakHashMap();
     
-    public <T> T property(Element e, String id, T deefault) {
-        if (e.getPropertyKeys().contains(id)) 
-            return e.getProperty(id);
-        return deefault;
-    }    
+//    public <T> T property(Element e, String id, T deefault) {
+//        if (e.getPropertyKeys().contains(id)) 
+//            return e.getProperty(id);
+//        return deefault;
+//    }    
     
-    public boolean isNeuron(Vertex v) {
-        return property(v, "layer", null) != null;
+    public boolean isNeuron(V v) {
+        //return property(v, "layer", null) != null;
+        return true;
     }
     
     @Override
     public void vertex(final AbstractGraphVis<V,E> g, final VertexVis<V,E> vv) {
         
-        Vertex v = vv.getVertex();
+        V v = vv.getVertex();
         if (!isNeuron(v))
             return;
         

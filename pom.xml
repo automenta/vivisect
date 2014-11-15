@@ -21,29 +21,7 @@
     </repositories>
         
     <dependencies>
-        
-        <dependency>
-            <groupId>syncleus</groupId>
-            <artifactId>gremlann</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-    
-        <dependency>
-            <groupId>com.tinkerpop</groupId>            
-            <version>3.0.0-SNAPSHOT</version>
-            <artifactId>gremlin-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.tinkerpop</groupId>            
-            <version>3.0.0-SNAPSHOT</version>
-            <artifactId>tinkergraph-gremlin</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.tinkerpop</groupId>            
-            <version>3.0.0-SNAPSHOT</version>
-            <artifactId>gremlin-algorithm</artifactId>
-        </dependency>
-            
+
         <dependency>
             <groupId>processing</groupId>
             <artifactId>core</artifactId>
