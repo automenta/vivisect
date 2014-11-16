@@ -2,6 +2,7 @@ package automenta.vivisect.timeline;
 
 import automenta.vivisect.Vis;
 import com.google.common.collect.Lists;
+import java.util.Collection;
 import java.util.List;
 import static processing.core.PConstants.HSB;
 import processing.core.PGraphics;
@@ -75,7 +76,19 @@ public class TimelineVis implements Vis {
         //TODO calculate timeScale and camX to view the cycle range
         
     }
+
+    public void clearCharts() {
+        charts.clear();
+    }
     
+    public void setCharts(Collection<Chart> newChartList) {
+        clearCharts();
+        charts.addAll(newChartList);
+    }
+    
+    public void addChart(Chart c) {
+        charts.add(c);
+    }
 
     public long getStart() {
         return cycleStart;

@@ -76,7 +76,7 @@ public class TreeMLData implements MLData {
 
     @Override
     public void add(final int t, final double f) {
-        throw new UnsupportedOperationException("Not supported yet");
+        setData(t, f);
     }
     
     @Override

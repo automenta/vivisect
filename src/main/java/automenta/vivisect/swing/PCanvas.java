@@ -6,7 +6,6 @@
 package automenta.vivisect.swing;
 
 import automenta.vivisect.Vis;
-import java.util.ArrayList;
 import processing.core.PApplet;
 import static processing.core.PConstants.DOWN;
 import static processing.core.PConstants.LEFT;
@@ -24,13 +23,11 @@ public class PCanvas extends PApplet {
     int mouseScroll = 0;
 
     Hnav hnav = new Hnav();
-    Hsim hsim = new Hsim();
 
     float zoom = 0.1f;
     float scale = 1f;
     float selection_distance = 10;
-    float FrameRate = 25f;    
-
+    float FrameRate = 25f;
 
     boolean drawn = false;
     float motionBlur = 0.0f;
@@ -39,51 +36,60 @@ public class PCanvas extends PApplet {
     float camspeed = 20.0f;
     float scrollcammult = 0.92f;
     boolean keyToo = true;
-        float savepx = 0;
-        float savepy = 0;
-        int selID = 0;
-        
-        float difx = 0;
-        float dify = 0;
-        int lastscr = 0;
-        boolean EnableZooming = true;
-        float scrollcamspeed = 1.1f;
+    float savepx = 0;
+    float savepy = 0;
+    int selID = 0;
 
+    float difx = 0;
+    float dify = 0;
+    int lastscr = 0;
+    boolean EnableZooming = true;
+    float scrollcamspeed = 1.1f;
+
+    public PCanvas() {
+        this(null);
+    }
     
     public PCanvas(Vis vis) {
+        this(vis, 26);
+    }
+
+    public PCanvas(Vis vis, int frameRate) {
         super();
+        this.FrameRate = frameRate;
         init();
+        if ((vis == null) && (this instanceof Vis)) {
+            //for subclasses:
+            vis = (Vis)this;
+        }
         this.vis = vis;
 
     }
 
-    
-        float MouseToWorldCoordX(int x) {
-            return 1 / zoom * (x - difx - width / 2);
-        }
+    float MouseToWorldCoordX(final int x) {
+        return 1 / zoom * (x - difx - width / 2);
+    }
 
-        float MouseToWorldCoordY(int y) {
-            return 1 / zoom * (y - dify - height / 2);
-        }
-    
+    float MouseToWorldCoordY(final int y) {
+        return 1 / zoom * (y - dify - height / 2);
+    }
+
     public float getCursorX() {
         return MouseToWorldCoordX(mouseX);
     }
-    
+
     public float getCursorY() {
         return MouseToWorldCoordY(mouseY);
     }
- 
-    
+
     @Override
     protected void resizeRenderer(int newWidth, int newHeight) {
         super.resizeRenderer(newWidth, newHeight);
         drawn = false;
     }
-    
 
     public void mouseScrolled() {
-        hnav.mouseScrolled();        
+        hnav.mouseScrolled();
     }
 
     @Override
@@ -98,27 +104,24 @@ public class PCanvas extends PApplet {
     @Override
     public void mouseReleased() {
         hnav.mouseReleased();
-        hsim.mouseReleased();
         super.mouseReleased();
     }
 
     @Override
     public void mouseDragged() {
         hnav.mouseDragged();
-        hsim.mouseDragged();
         super.mouseDragged();
     }
 
     @Override
     public void mousePressed() {
         hnav.mousePressed();
-        hsim.mousePressed();
         super.mousePressed();
     }
 
     @Override
     public void draw() {
-        hnav.Transform();
+        hnav.applyTransform();
 
         if (drawn) {
             return;
@@ -143,12 +146,10 @@ public class PCanvas extends PApplet {
         mouseScrolled();
     }
 
-    
     @Override
     public void setup() {
-        
-        //size(500,500,P3D);
 
+        //size(500,500,P3D);
         frameRate(FrameRate);
 
         if (isGL()) {
@@ -157,13 +158,11 @@ public class PCanvas extends PApplet {
             System.out.println("Processing.org enabled OpenGL");
         }
 
-        
-         
     }
-    
+
     public void setFrameRate(float frameRate) {
-        this.frameRate = frameRate;
-        frameRate(frameRate);
+        this.FrameRate = frameRate;
+        frameRate(FrameRate);
     }
 
     public float getFrameRate() {
@@ -177,14 +176,8 @@ public class PCanvas extends PApplet {
     public float getZoom() {
         return zoom;
     }
-    
-    
-    
-    
-
 
     class Hnav {
-
 
         private boolean md = false;
 
@@ -193,8 +186,8 @@ public class PCanvas extends PApplet {
             if (mouseButton == RIGHT) {
                 savepx = mouseX;
                 savepy = mouseY;
+                redraw();
             }
-            drawn = false;
         }
 
         void mouseReleased() {
@@ -207,8 +200,8 @@ public class PCanvas extends PApplet {
                 dify += (mouseY - savepy);
                 savepx = mouseX;
                 savepy = mouseY;
+                redraw();                
             }
-            drawn = false;
         }
 
         void keyPressed() {
@@ -239,6 +232,7 @@ public class PCanvas extends PApplet {
                 difx = (difx) * (zoom / zoomBefore);
                 dify = (dify) * (zoom / zoomBefore);
             }
+            redraw();            
             drawn = false;
         }
 
@@ -259,71 +253,72 @@ public class PCanvas extends PApplet {
             }
             difx = (difx) * (zoom / zoomBefore);
             dify = (dify) * (zoom / zoomBefore);
+            redraw();
             drawn = false;
         }
 
-        void Transform() {
+        void applyTransform() {
             translate(difx + 0.5f * width, dify + 0.5f * height);
             scale(zoom, zoom);
         }
     }
 
-    ////Object management - dragging etc.
-    class Hsim {
+//    ////Object management - dragging etc.
+//    class Hsim {
+//
+//        ArrayList obj = new ArrayList();
+//
+//        void Init() {
+//            smooth();
+//        }
+//
+//        void mousePressed() {
+//            if (mouseButton == LEFT) {
+//                checkSelect();
+//            }
+//        }
+//        boolean dragged = false;
+//
+//        void mouseDragged() {
+//            if (mouseButton == LEFT) {
+//                dragged = true;
+//                dragElems();
+//            }
+//        }
+//
+//        void mouseReleased() {
+//            dragged = false;
+//            //selected = null;
+//        }
+//
+//        void dragElems() {
+//            /*
+//             if (dragged && selected != null) {
+//             selected.x = hnav.MouseToWorldCoordX(mouseX);
+//             selected.y = hnav.MouseToWorldCoordY(mouseY);
+//             hsim_ElemDragged(selected);
+//             }
+//             */
+//        }
+//
+//        void checkSelect() {
+//            /*
+//             double selection_distanceSq = selection_distance*selection_distance;
+//             if (selected == null) {
+//             for (int i = 0; i < obj.size(); i++) {
+//             Vertex oi = (Vertex) obj.get(i);
+//             float dx = oi.x - hnav.MouseToWorldCoordX(mouseX);
+//             float dy = oi.y - hnav.MouseToWorldCoordY(mouseY);
+//             float distanceSq = (dx * dx + dy * dy);
+//             if (distanceSq < (selection_distanceSq)) {
+//             selected = oi;
+//             hsim_ElemClicked(oi);
+//             return;
+//             }
+//             }
+//             }
+//             */
+//        }
+//    }
 
-        ArrayList obj = new ArrayList();
-
-        void Init() {
-            smooth();
-        }
-
-        void mousePressed() {
-            if (mouseButton == LEFT) {
-                checkSelect();
-            }
-        }
-        boolean dragged = false;
-
-        void mouseDragged() {
-            if (mouseButton == LEFT) {
-                dragged = true;
-                dragElems();
-            }
-        }
-
-        void mouseReleased() {
-            dragged = false;
-            //selected = null;
-        }
-
-        void dragElems() {
-            /*
-             if (dragged && selected != null) {
-             selected.x = hnav.MouseToWorldCoordX(mouseX);
-             selected.y = hnav.MouseToWorldCoordY(mouseY);
-             hsim_ElemDragged(selected);
-             }
-             */
-        }
-
-        void checkSelect() {
-            /*
-             double selection_distanceSq = selection_distance*selection_distance;
-             if (selected == null) {
-             for (int i = 0; i < obj.size(); i++) {
-             Vertex oi = (Vertex) obj.get(i);
-             float dx = oi.x - hnav.MouseToWorldCoordX(mouseX);
-             float dy = oi.y - hnav.MouseToWorldCoordY(mouseY);
-             float distanceSq = (dx * dx + dy * dy);
-             if (distanceSq < (selection_distanceSq)) {
-             selected = oi;
-             hsim_ElemClicked(oi);
-             return;
-             }
-             }
-             }
-             */
-        }
-    }
-    
 }
