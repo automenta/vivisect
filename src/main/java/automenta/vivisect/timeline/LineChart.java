@@ -13,11 +13,12 @@ public class LineChart extends Chart implements MultiChart {
     float max;
     boolean showVerticalLines = false;
     boolean showPoints = true;
-    float lineThickness = 3.5f;
+    float lineThickness = 1f;
     float borderThickness = 0.5f;
     private int end;
     private int start;
     private boolean specifiedRange;
+    boolean xorOverlay = false;
 
   
 
@@ -93,9 +94,11 @@ public class LineChart extends Chart implements MultiChart {
         //draw overlay
         l.g.pushMatrix();
         l.g.resetMatrix();
-        
-        Graphics2D g2 = l.g2;
-        g2.setXORMode(Color.white);
+                
+        if (xorOverlay) {
+            Graphics2D g2 = l.g2;
+            g2.setXORMode(Color.white);
+        }
     
         
         int dsy = (int) Math.abs(screenyLo - screenyHi);
@@ -119,8 +122,10 @@ public class LineChart extends Chart implements MultiChart {
             dsyt += ytspace;
         }
         
-        // draw cursor
-        g2.setPaintMode();
+        if (xorOverlay) {        
+            Graphics2D g2 = l.g2;
+            g2.setPaintMode();
+        }
         
         l.g.popMatrix();
     }
@@ -166,8 +171,9 @@ public class LineChart extends Chart implements MultiChart {
                 
                 if (showPoints) {
                     l.g.noStroke();
-                    l.g.fill(ccolor);
-                    float w = Math.min(timeScale1, yScale1) / 12f;
+                    //TODO create separate size and opacity get/set parameter for the points
+                    l.g.fill(ccolor, 128f * (p * 0.5f + 0.5f));
+                    float w = lineThickness * 2.75f;
                     l.g.rect(px - w / 2f, py - w / 2f, w, w);
                 }
             }
@@ -198,6 +204,12 @@ public class LineChart extends Chart implements MultiChart {
     public List<TreeMLData> getData() {
         return data;
     }
+
+    public void setLineThickness(float lineThickness) {
+        this.lineThickness = lineThickness;
+    }
+    
+    
     
     
     
