@@ -1,30 +1,47 @@
 package automenta.vivisect.timeline;
 
 import automenta.vivisect.TreeMLData;
-import java.util.Arrays;
+import automenta.vivisect.timeline.Chart.MultiChart;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.util.ArrayList;
 import java.util.List;
 
-public class LineChart extends Chart {
-    public final List<TreeMLData> sensors;
+public class LineChart extends Chart implements MultiChart {
+    protected final List<TreeMLData> data;
     float min;
     float max;
     boolean showVerticalLines = false;
     boolean showPoints = true;
-    float lineThickness = 2.5f;
+    float lineThickness = 3.5f;
     float borderThickness = 0.5f;
     private int end;
     private int start;
-    boolean overlayEnable = false;
+    private boolean specifiedRange;
 
   
 
     public LineChart(TreeMLData... series) {
         super();
-        this.sensors = Arrays.asList(series);
+        
+        this.data = new ArrayList(series.length);
+        for (TreeMLData s : series)
+            data.add(s);
+        
+    }
+    
+    public LineChart(float min, float max, TreeMLData... series) {
+        this(series);
+        
+        range(min, max);
     }
 
-    public void setOverlayEnable(boolean overlayEnable) {
-        this.overlayEnable = overlayEnable;
+ 
+    public LineChart range(float min, float max) {
+        this.specifiedRange = true;
+        this.min = min;
+        this.max = max; 
+        return this;
     }
 
     
@@ -35,7 +52,19 @@ public class LineChart extends Chart {
         yScale *= height;
         float screenyHi = l.g.screenY(l.cycleStart * timeScale, y);
         float screenyLo = l.g.screenY(l.cycleStart * timeScale, y + yScale);
-        updateRange(l);
+        
+        int displayHeight = l.g.height;
+        
+        //TODO Horizontal clipping
+        
+        //Vertical Clipping:
+        if ( ((screenyHi < 0) && (screenyLo < 0)) || ((screenyHi >= displayHeight) && (screenyLo >= displayHeight)) ) {
+            return;
+        }
+                
+        if (!specifiedRange)
+            updateRange(l);
+        
         l.g.stroke(127);
         l.g.strokeWeight(borderThickness);
         //bottom line
@@ -52,7 +81,7 @@ public class LineChart extends Chart {
     protected void updateRange(TimelineVis l) {
         min = Float.POSITIVE_INFINITY;
         max = Float.NEGATIVE_INFINITY;
-        for (TreeMLData chart : sensors) {
+        for (TreeMLData chart : data) {
             double[] mm = chart.getMinMax(l.cycleStart, l.cycleEnd);
             min = (float)Math.min(min,mm[0]);
             max = (float)Math.max(max,mm[1]);
@@ -64,28 +93,41 @@ public class LineChart extends Chart {
         //draw overlay
         l.g.pushMatrix();
         l.g.resetMatrix();
-        l.g.textSize(15f);
+        
+        Graphics2D g2 = l.g2;
+        g2.setXORMode(Color.white);
+    
+        
         int dsy = (int) Math.abs(screenyLo - screenyHi);
+        
+        
+        float ytspace = dsy * 0.75f / data.size() / 2;
+
+        l.g.textSize(11f);
+        l.g.fill(210);
+        
+        //TODO number precision formatting
+        l.g.text("" + ((double) min), 0, screenyLo - dsy / 10f);
+        l.g.text("" + ((double) max), 0, screenyHi + dsy / 10f);
+
+        l.g.textSize(15f);
         float dsyt = screenyHi + 0.15f * dsy;
-        float ytspace = dsy * 0.75f / sensors.size() / 2;
-        for (TreeMLData chart : sensors) {
+        for (TreeMLData chart : data) {
             l.g.fill(chart.getColor().getRGB());
             dsyt += ytspace;
             l.g.text(chart.label, 0, dsyt);
             dsyt += ytspace;
         }
-        l.g.textSize(11f);
-        l.g.fill(200, 195f);
         
-        //TODO number precision formatting
-        l.g.text("" + ((double) min), 0, screenyLo - dsy / 10f);
-        l.g.text("" + ((double) max), 0, screenyHi + dsy / 10f);
+        // draw cursor
+        g2.setPaintMode();
+        
         l.g.popMatrix();
     }
 
     protected void drawData(TimelineVis l, float timeScale1, float yScale1, float y) {
         int ccolor = 0;
-        for (TreeMLData chart : sensors) {
+        for (TreeMLData chart : data) {
             ccolor = chart.getColor().getRGB();
             float lx = 0;
             float ly = 0;
@@ -136,7 +178,7 @@ public class LineChart extends Chart {
     public int getStart() {
         start = Integer.MAX_VALUE;
         end = 0;
-        for (TreeMLData s  : sensors) {
+        for (TreeMLData s  : data) {
             int ss = s.getStart();
             int se = s.getEnd();
                     
@@ -151,6 +193,12 @@ public class LineChart extends Chart {
         //call getStart() prior to this
         return end;
     }
+
+    @Override
+    public List<TreeMLData> getData() {
+        return data;
+    }
+    
     
     
 }

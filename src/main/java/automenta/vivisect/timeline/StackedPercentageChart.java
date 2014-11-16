@@ -33,7 +33,7 @@ public class StackedPercentageChart extends LineChart {
         l.g.noStroke();
         for (int t = l.cycleStart; t < l.cycleEnd; t++) {
             float total = 0;
-            for (TreeMLData chart : sensors) {
+            for (TreeMLData chart : data) {
                 float v = (float)chart.getData(t);
                 if (Float.isNaN(v)) {
                     continue;
@@ -44,8 +44,8 @@ public class StackedPercentageChart extends LineChart {
                 continue;
             }
             float sy = y;
-            float gap = yScale * (1.0f - barHeight) / sensors.size();
-            for (TreeMLData chart : sensors) {
+            float gap = yScale * (1.0f - barHeight) / data.size();
+            for (TreeMLData chart : data) {
                 int ccolor = chart.getColor().getRGB();
                 float lx = 0;
                 float ly = 0;

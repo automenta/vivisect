@@ -15,7 +15,7 @@ public class BarChart extends LineChart {
     @Override
     protected void drawData(TimelineVis l, float timeScale, float yScale1, float y) {
         int ccolor = 0;
-        TreeMLData chart = sensors.get(0);
+        TreeMLData chart = data.get(0);
         ccolor = chart.getColor().getRGB();
         l.g.noStroke();
         for (int t = l.cycleStart; t < l.cycleEnd; t++) {

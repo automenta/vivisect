@@ -74,6 +74,16 @@ public class PCanvas extends PApplet {
         return 1 / zoom * (y - dify - height / 2);
     }
 
+    public float getPanX() {
+        return difx;
+    }
+    public float getPanY() {
+        return dify;
+    }
+    
+    public void setPanX(float px) { difx = px; }
+    public void setPanY(float py) { dify = py; }
+    
     public float getCursorX() {
         return MouseToWorldCoordX(mouseX);
     }

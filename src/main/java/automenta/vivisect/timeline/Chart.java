@@ -4,6 +4,9 @@
  */
 package automenta.vivisect.timeline;
 
+import automenta.vivisect.TreeMLData;
+import java.util.List;
+
 /**
  * Modes: Line Line with vertical pole to base Stacked bar Stacked bar
  * normalized each step Scatter Spectral Event Bubble
@@ -12,7 +15,12 @@ package automenta.vivisect.timeline;
 public abstract class Chart {
     protected float height = 1.0f;
     protected float width = 1.0f;
+    protected boolean overlayEnable = false;
 
+    public interface MultiChart {
+        public List<TreeMLData> getData();
+    }
+    
     public Chart() {
         height = 1f;
     }
@@ -30,7 +38,11 @@ public abstract class Chart {
         this.width = w;
         return this;
     }
-
+    
+    public void setOverlayEnable(boolean overlayEnable) {
+        this.overlayEnable = overlayEnable;
+    }
+    
     //called during NAR thread
     public void update(TimelineVis l, float timeScale, float yScale) {
     }

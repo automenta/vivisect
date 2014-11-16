@@ -48,7 +48,7 @@ public class SpectrumChart extends LineChart {
     }
 
     protected void update() {
-        TreeMLData chart = sensors.get(0);
+        TreeMLData chart = data.get(0);
         
         
         float length = chart.getEnd() - chart.getStart();;
@@ -89,7 +89,7 @@ public class SpectrumChart extends LineChart {
     @Override
     protected void drawData(TimelineVis l, float timeScale, float yScale, float y) {
     
-        TreeMLData chart = sensors.get(0);
+        TreeMLData chart = data.get(0);
         
         if (!updated) {            
             update(); 

@@ -2,10 +2,12 @@ package automenta.vivisect.timeline;
 
 import automenta.vivisect.Vis;
 import com.google.common.collect.Lists;
+import java.awt.Graphics2D;
 import java.util.Collection;
 import java.util.List;
 import static processing.core.PConstants.HSB;
 import processing.core.PGraphics;
+import processing.core.PGraphicsJava2D;
 
 /**
  * Timeline view of an inference trace. Focuses on a specific window and certain
@@ -35,7 +37,9 @@ public class TimelineVis implements Vis {
     float textScale = 0.1f;
     int cycleStart = 0;
     int cycleEnd = 0;
+    
     public PGraphics g;
+    public Graphics2D g2; //for direct Swing control
 
     public static class Camera {
         public float camX = 0f;
@@ -239,6 +243,7 @@ public class TimelineVis implements Vis {
     
        
         this.g = g;
+        this.g2 = ((PGraphicsJava2D)g).g2;
         
         int originalColorMode = g.colorMode;
         g.colorMode(HSB);
@@ -359,4 +364,6 @@ public class TimelineVis implements Vis {
     public float getDrawnTextScale() {
         return drawnTextScale;
     }
+    
+    
 }
