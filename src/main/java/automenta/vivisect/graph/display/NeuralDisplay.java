@@ -9,7 +9,6 @@ import automenta.vivisect.Video;
 import automenta.vivisect.graph.AbstractGraphVis;
 import automenta.vivisect.graph.EdgeVis;
 import automenta.vivisect.graph.VertexVis;
-import example.SimpleDirectedGraph.DefaultDisplay;
 
 /**
  *
@@ -29,6 +28,7 @@ abstract public class NeuralDisplay<V, E> extends DefaultDisplay<V,E>  {
         return deefault;
     } */   
     
+    
     @Override
     public void vertex(final AbstractGraphVis<V,E> g, final VertexVis<V,E> vv) {
         super.vertex(g, vv);
@@ -43,7 +43,7 @@ abstract public class NeuralDisplay<V, E> extends DefaultDisplay<V,E>  {
         
         vv.radius = baseSize/2f + (float)(baseSize * Math.abs(total));
         
-        vv.color = Video.getColor(layer.hashCode(), 0.75f, 0.75f, 0.75f).getRGB();
+        vv.color = Video.getColor(layer.hashCode(), 0.75f, 0.75f, 0.75f);
         vv.label = layer;
         vv.speed = 0.1f;
         vv.strokeColor = strokeColor;                

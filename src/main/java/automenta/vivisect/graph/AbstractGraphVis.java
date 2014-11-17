@@ -3,13 +3,13 @@ package automenta.vivisect.graph;
 
 
 import automenta.vivisect.Vis;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import org.apache.commons.math3.util.FastMath;
 import org.jgrapht.Graph;
-import static processing.core.PApplet.radians;
-import static processing.core.PConstants.PROJECT;
+import static processing.core.PConstants.MITER;
 import static processing.core.PConstants.SQUARE;
 import processing.core.PGraphics;
 
@@ -21,14 +21,12 @@ abstract public class AbstractGraphVis<V, E> implements Vis {
 
     
 
-    Map<V, VertexVis<V,E>> vertices = new HashMap();
-    Map<E, EdgeVis<V,E>> edges = new HashMap();
-    Set<V> deadVertices = new HashSet();
-    Set<E> deadEdges = new HashSet();
-    Map<Object, Integer> edgeColors = new HashMap(16);
+    Map<V, VertexVis<V,E>> vertices = new LinkedHashMap();
+    Map<E, EdgeVis<V,E>> edges = new LinkedHashMap();
+    Set<V> deadVertices = new LinkedHashSet();
+    Set<E> deadEdges = new LinkedHashSet();
 
     Graph<V,E> currentGraph;
-    boolean showSyntax;
 
     boolean updateNext = true;
     
@@ -123,11 +121,10 @@ abstract public class AbstractGraphVis<V, E> implements Vis {
 
             updateNext = false;
 
-            synchronized (vertices) {
+            /*synchronized (vertices)*/ {
                 deadVertices.clear();
+                deadEdges.clear();
                 
-                
-
                 currentGraph = getGraph();
                 if (currentGraph == null) {
                     vertices.clear();
@@ -136,15 +133,16 @@ abstract public class AbstractGraphVis<V, E> implements Vis {
                 }
                 
                 deadVertices.addAll(vertices.keySet());
-                for (final V v : currentGraph.vertexSet())
-                   updateVertex(v);                  
                 deadEdges.addAll(edges.keySet());
-                for (final V v : deadVertices)
-                    vertices.remove(v);
                 
+                for (final V v : currentGraph.vertexSet())
+                   updateVertex(v);
                 
                 for (final E e : currentGraph.edgeSet())
-                    updateEdge(e);                
+                    updateEdge(e);
+                
+                for (final V v : deadVertices)
+                    vertices.remove(v);
                 for (final E e : deadEdges)
                     edges.remove(e);
             }
@@ -161,14 +159,16 @@ abstract public class AbstractGraphVis<V, E> implements Vis {
             return true;
         }
 
-        synchronized (vertices) {
+        /*synchronized (vertices)*/ {
             //for speed:
+            g.noFill();
             g.strokeCap(SQUARE);
-            g.strokeJoin(PROJECT);
+            g.strokeJoin(MITER); //https://www.processing.org/reference/strokeJoin_.html
 
             /*boolean changed = false;*/
             
-            int numEdges = currentGraph.edgeSet().size();
+            
+            int numEdges = currentGraph.edgeSet().size();            
             if (numEdges < maxEdges) {
                 
                 for (final EdgeVis d : edges.values()) {
@@ -180,7 +180,7 @@ abstract public class AbstractGraphVis<V, E> implements Vis {
             g.noStroke();
 
             int numNodes = vertices.size();
-            boolean text = numNodes < maxNodesWithLabels;
+            //boolean text = numNodes < maxNodesWithLabels;
             if (numNodes < maxNodes) {
                 for (final VertexVis d : vertices.values()) {
                     /*changed |= */d.draw(this, g);
@@ -208,24 +208,43 @@ abstract public class AbstractGraphVis<V, E> implements Vis {
     
 
  
-    void drawArrowAngle(final PGraphics g, final float cx, final float cy, final float len, final float angle, float arrowHeadRadius) {        
-        g.pushMatrix();
-        g.translate(cx, cy);
-        g.rotate(radians(angle));
-        g.line(0, 0, len, 0);
-        g.line(len, 0, len - arrowHeadRadius, -arrowHeadRadius/2f);
-        g.line(len, 0, len - arrowHeadRadius, arrowHeadRadius/2f);
-        g.popMatrix();
-    }
+    /** TODO avoid using transform, just calculation coordinates in current transform */
+    void drawArrow(final PGraphics g, final float x1, final float y1, float x2, float y2, float destinationRadius) {
+        //float cx = (x1 + x2) / 2f;
+        //float cy = (y1 + y2) / 2f;
+        float dx = x2-x1;
+        float dy = y2-y1;
+        
+        float angle = (float) (FastMath.atan2(dy, dx));
 
-    
-    void drawArrow(final PGraphics g, final float x1, final float y1, final float x2, final float y2) {
-        float cx = (x1 + x2) / 2f;
-        float cy = (y1 + y2) / 2f;
-        float len = (float) Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
-        float a = (float) (Math.atan2(y2 - y1, x2 - x1) * 180.0f / Math.PI);
+        //if (len == 0) return;
+        
+        //g.line(x1, y1, x2, y2);
+        
+        final float arrowAngle = (float)Math.PI/12f + g.strokeWeight/200f;
+        final float arrowHeadRadius = /*len **/ arrowHeadScale * (g.strokeWeight*16f);
+        if (arrowHeadRadius > 0) {
 
-        drawArrowAngle(g, x1, y1, len, a, len * arrowHeadScale /* nodeSize/16f*/);
+            float len = (float) FastMath.sqrt(dx*dx + dy*dy) - destinationRadius;
+            if (len <= 0) return;
+            
+            x2 = (float)FastMath.cos(angle) * len  + x1;
+            y2 = (float)FastMath.sin(angle) * len  + y1;
+            
+            
+            float plx = (float)FastMath.cos(angle-Math.PI-arrowAngle) * arrowHeadRadius; 
+            float ply = (float)FastMath.sin(angle-Math.PI-arrowAngle) * arrowHeadRadius; 
+            //g.line(x2, y2, x2 + plx, y2 + ply);
+            float prx = (float)FastMath.cos(angle-Math.PI+arrowAngle) * arrowHeadRadius; 
+            float pry = (float)FastMath.sin(angle-Math.PI+arrowAngle) * arrowHeadRadius; 
+            //g.line(x2, y2, x2 + prx, y2 + pry);
+            g.fill(g.strokeColor);
+            g.noStroke();
+            //g.triangle(x2, y2, x2 + prx, y2 + pry, x2 + plx, y2 + ply);
+            g.quad(x2, y2, x2 + prx, y2 + pry, x1, y1, x2 + plx, y2 + ply);
+            g.noFill();
+        }
+        
     }
 
 //    void drawLine(final float x1, final float y1, final float x2, final float y2) {
