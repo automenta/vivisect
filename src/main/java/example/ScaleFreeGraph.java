@@ -18,17 +18,18 @@ import org.jgrapht.graph.DirectedPseudograph;
  */
 public class ScaleFreeGraph {
 
-    public static void main(String[] args) {
-        VertexFactory<Object> vertexFactory
-                = new VertexFactory<Object>() {
-                    private int i;
+    static final VertexFactory<Object> DemoVertexFactory = new VertexFactory<Object>() {
+        private int i;
 
-                    public Object createVertex() {
-                        return new Integer(++i);
-                    }
-                };
+        public Object createVertex() {
+            return new Integer(++i);
+        }
+    };
+    
+    public static void main(String[] args) {
+        
         Graph g = new DirectedPseudograph(DefaultEdge.class);
-        new ScaleFreeGraphGenerator<>(16).generateGraph(g, vertexFactory, null);
+        new ScaleFreeGraphGenerator<>(16).generateGraph(g, DemoVertexFactory, null);
         new SimpleDirectedGraph(g, new FastOrganicLayout());
     }
 }
