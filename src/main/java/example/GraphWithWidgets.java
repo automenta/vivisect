@@ -12,9 +12,10 @@ import automenta.vivisect.graph.AnimatingGraphVis;
 import automenta.vivisect.graph.EdgeVis;
 import automenta.vivisect.graph.GraphDisplay;
 import automenta.vivisect.graph.VertexVis;
-import automenta.vivisect.gui.GButton;
 import automenta.vivisect.gui.GControl;
+import automenta.vivisect.gui.GPanel;
 import automenta.vivisect.gui.GSlider;
+import automenta.vivisect.gui.GSlider2D;
 import automenta.vivisect.swing.NWindow;
 import automenta.vivisect.swing.PCanvas;
 import static example.ScaleFreeGraph.DemoVertexFactory;
@@ -39,14 +40,17 @@ public class GraphWithWidgets {
             
             GControl control = (GControl) v.the(GControl.class);
             if (control == null) {         
-                System.out.println("new button: ");
-                if (Math.random() < 0.5f) {
-                    v.the(GControl.class, control = new GButton(g.getCanvas(), 0, 0, 75, 35));
-                }
-                else {
-                    v.the(GControl.class, control = new GSlider(g.getCanvas(), 0, 0, 85, 35, 10f));
-                }
+                
+                GPanel panel;
+                v.the(GControl.class, control = panel = new GPanel(g.getCanvas(), -30, -30, 150, 80));
+                
+                panel.setText(v.label);
+                panel.setCollapsible(false);
+                panel.setAlpha(237);                
+                panel.add(new GSlider2D(g.getCanvas(), 0, 25, 75, 35));
+                panel.add(new GSlider(g.getCanvas(), 0, 55, 85, 35, 10f));
             }
+            
             control.moveTo(v.x * v.scale, v.y * v.scale);
             
         }     
