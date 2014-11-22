@@ -8,8 +8,10 @@ package example;
 import automenta.vivisect.Vis;
 import automenta.vivisect.gui.GButton;
 import automenta.vivisect.gui.GKnob;
+import automenta.vivisect.gui.GPanel;
 import automenta.vivisect.gui.GSlider;
 import automenta.vivisect.gui.GSlider2D;
+import automenta.vivisect.gui.GStick;
 import automenta.vivisect.gui.GTextField;
 import automenta.vivisect.swing.NWindow;
 import automenta.vivisect.swing.PCanvas;
@@ -46,10 +48,26 @@ public class GUIExample {
         GKnob k = new GKnob(p, 150,200,50,50, 0.25f);
         
         
-        new GTextField(p, -100, -200, 300, 50);
+        new GTextField(p, -100, -200, 300, 50).setText("VIVISECT");
         
         //new GWindow(p, "x", 10, 10, 100, 300, true, null);
         
         new NWindow( "x", p ).show(500, 500, true);
+        
+        GPanel panel = new GPanel(p, -300,-300,200,100);
+        //panel.setRotation(0.573f);
+        
+        GStick g = new GStick(p,20,20,50,50);
+        /*
+        g.addEventHandler(new Object() {
+            public void handleStickEvents(GStick g, GEvent e) {
+                //System.out.println(g.getPositionAngle());
+                
+                //panel.setRotation( g.getPositionAngle() );
+            }
+        }, "handleStickEvents");*/
+        panel.add(g);
+                
+        //panel.setCollapsed(true);
     }
 }
